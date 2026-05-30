@@ -1,12 +1,9 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Search, SlidersHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Input } from "@/components/ui/input";
-import { ModuleTable } from "@/components/dashboard/module-table";
+import { ModuleDataExplorer, type ModuleRow } from "@/components/dashboard/module-data-explorer";
 
 type ModulePageProps = {
   title: string;
@@ -14,7 +11,7 @@ type ModulePageProps = {
   icon: LucideIcon;
   action: string;
   columns: string[];
-  rows: Array<Record<string, string | number>>;
+  rows: ModuleRow[];
   panels: string[];
   message?: string;
   error?: string;
@@ -42,19 +39,14 @@ export function ModulePage({ title, description, icon: Icon, action, columns, ro
       </div>
       <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
         <div className="space-y-4">
-          <Card>
-            <CardContent className="flex flex-col gap-3 pt-5 sm:flex-row">
-              <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input className="pl-9" placeholder="Search, filter, sort, and paginate records" />
-              </div>
-              <Button variant="outline">
-                <SlidersHorizontal className="h-4 w-4" />
-                Filters
-              </Button>
-            </CardContent>
-          </Card>
-          {rows.length ? <ModuleTable title={`${title} records`} columns={columns} rows={rows} /> : <EmptyState icon={Icon} title={`No ${title.toLowerCase()} yet`} description="New tenant workspaces start clean and fill as teams import records or create workflows." action={action} />}
+          <ModuleDataExplorer
+            title={title}
+            columns={columns}
+            rows={rows}
+            emptyTitle={`No ${title.toLowerCase()} yet`}
+            emptyDescription="New tenant workspaces start clean and fill as teams import records or create workflows."
+            emptyAction={action}
+          />
         </div>
         <div className="space-y-4">
           {form}
