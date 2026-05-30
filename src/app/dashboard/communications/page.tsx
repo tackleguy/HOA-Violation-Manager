@@ -1,13 +1,8 @@
 import { Megaphone } from "lucide-react";
 import { ModulePage } from "@/components/dashboard/module-page";
 import { RecordForm } from "@/components/dashboard/record-form";
+import { getAnnouncementRows } from "@/lib/services/dashboard-service";
 import { createAnnouncement } from "../actions";
-
-const announcements = [
-  { title: "Pool maintenance", audience: "All residents", status: "Scheduled", sent: "Jun 8" },
-  { title: "Board meeting reminder", audience: "Board", status: "Sent", sent: "May 29" },
-  { title: "Gate code update", audience: "Owners", status: "Draft", sent: "Pending" }
-];
 
 export default async function CommunicationsPage({
   searchParams
@@ -15,6 +10,7 @@ export default async function CommunicationsPage({
   searchParams: Promise<{ message?: string; error?: string }>;
 }) {
   const params = await searchParams;
+  const rows = await getAnnouncementRows();
   return (
     <ModulePage
       title="Communications"
@@ -22,7 +18,7 @@ export default async function CommunicationsPage({
       icon={Megaphone}
       action="Create announcement"
       columns={["title", "audience", "status", "sent"]}
-      rows={announcements}
+      rows={rows}
       panels={["Announcement builder", "Message log", "Searchable archive"]}
       message={params.message}
       error={params.error}

@@ -9,6 +9,7 @@ import {
   residents as demoResidents,
   violations as demoViolations
 } from "@/lib/demo-data";
+import { roles } from "@/lib/constants";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getDefaultOrganizationId } from "@/lib/services/organization-service";
 import { createClient } from "@/lib/supabase/server";
@@ -163,6 +164,82 @@ export async function getDocumentRows() {
     version: "Current",
     access: titleize(document.visibility)
   })) ?? demoDocuments;
+}
+
+export async function getAnnouncementRows() {
+  const context = await getTenantContext();
+  if (!context) {
+    return [
+      { title: "Pool maintenance", audience: "All residents", status: "Scheduled", sent: "Jun 8" },
+      { title: "Board meeting reminder", audience: "Board", status: "Sent", sent: "May 29" },
+      { title: "Gate code update", audience: "Owners", status: "Draft", sent: "Pending" }
+    ];
+  }
+
+  const { data } = await context.supabase
+    .from("announcements")
+    .select("title, audience, published_at, created_at")
+    .eq("organization_id", context.organizationId)
+    .order("created_at", { ascending: false })
+    .limit(25);
+
+  return data?.map((announcement) => ({
+    title: announcement.title,
+    audience: titleize(announcement.audience),
+    status: announcement.published_at ? "Sent" : "Draft",
+    sent: announcement.published_at ? new Date(announcement.published_at).toLocaleDateString() : "Pending"
+  })) ?? [];
+}
+
+export async function getActivityRows() {
+  const context = await getTenantContext();
+  if (!context) {
+    return [
+      { event: "Violation updated", actor: "Avery Collins", target: "9013 Lake Vista", time: "3 minutes ago" },
+      { event: "User invited", actor: "Nadia Shah", target: "Inspector", time: "21 minutes ago" },
+      { event: "Document downloaded", actor: "Graham Ellis", target: "CC&Rs", time: "1 hour ago" }
+    ];
+  }
+
+  const { data } = await context.supabase
+    .from("activity_logs")
+    .select("action, actor_id, target_table, target_id, created_at")
+    .eq("organization_id", context.organizationId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  return data?.map((log) => ({
+    event: titleize(log.action),
+    actor: log.actor_id ? `User ${log.actor_id.slice(0, 8)}` : "System",
+    target: log.target_table ? `${titleize(log.target_table)}${log.target_id ? ` ${log.target_id.slice(0, 8)}` : ""}` : "System",
+    time: formatDistanceToNow(new Date(log.created_at), { addSuffix: true })
+  })) ?? [];
+}
+
+export async function getMemberRows() {
+  const context = await getTenantContext();
+  if (!context) {
+    return roles.map((role, index) => ({
+      name: ["Avery Collins", "Nadia Shah", "Graham Ellis", "Sam Rivera", "Jordan Lee", "Read Only Auditor"][index],
+      role: titleize(role),
+      status: index < 5 ? "Active" : "Invited",
+      access: index === 0 ? "Global" : "Evergreen Ridge"
+    }));
+  }
+
+  const { data } = await context.supabase
+    .from("memberships")
+    .select("user_id, role, status, created_at")
+    .eq("organization_id", context.organizationId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  return data?.map((membership) => ({
+    name: `User ${membership.user_id.slice(0, 8)}`,
+    role: titleize(membership.role),
+    status: titleize(membership.status),
+    access: "Current HOA"
+  })) ?? [];
 }
 
 async function getTenantContext() {

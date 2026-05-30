@@ -1,15 +1,8 @@
 import { Settings } from "lucide-react";
 import { ModulePage } from "@/components/dashboard/module-page";
 import { RecordForm } from "@/components/dashboard/record-form";
-import { roles } from "@/lib/constants";
+import { getMemberRows } from "@/lib/services/dashboard-service";
 import { inviteMember } from "../actions";
-
-const users = roles.map((role, index) => ({
-  name: ["Avery Collins", "Nadia Shah", "Graham Ellis", "Sam Rivera", "Jordan Lee", "Read Only Auditor"][index],
-  role,
-  status: index < 5 ? "Active" : "Invited",
-  access: index === 0 ? "Global" : "Evergreen Ridge"
-}));
 
 export default async function SettingsPage({
   searchParams
@@ -17,6 +10,7 @@ export default async function SettingsPage({
   searchParams: Promise<{ message?: string; error?: string }>;
 }) {
   const params = await searchParams;
+  const rows = await getMemberRows();
   return (
     <ModulePage
       title="Settings"
@@ -24,7 +18,7 @@ export default async function SettingsPage({
       icon={Settings}
       action="Invite user"
       columns={["name", "role", "status", "access"]}
-      rows={users}
+      rows={rows}
       panels={["Organization settings", "Role permissions", "Notifications"]}
       message={params.message}
       error={params.error}

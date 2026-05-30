@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ModuleDataExplorer, type ModuleRow } from "@/components/dashboard/module-data-explorer";
+import { ModuleInsights } from "@/components/dashboard/module-insights";
 
 type ModulePageProps = {
   title: string;
@@ -50,20 +50,7 @@ export function ModulePage({ title, description, icon: Icon, action, columns, ro
         </div>
         <div className="space-y-4">
           {form}
-          {panels.map((panel) => (
-            <Card key={panel}>
-              <CardHeader>
-                <CardTitle>{panel}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="h-2 rounded bg-primary/60" />
-                  <div className="h-2 w-3/4 rounded bg-muted" />
-                  <div className="h-2 w-1/2 rounded bg-muted" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <ModuleInsights title={title} rows={rows} panels={panels} />
         </div>
       </div>
     </div>
