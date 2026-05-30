@@ -76,9 +76,10 @@ export default async function LoginPage({
                 </Button>
               </div>
             </form>
-            <div className="flex justify-between text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
               <Link href="/reset-password" className="hover:text-foreground">Reset password</Link>
               <Link href="/invite" className="hover:text-foreground">Accept invite</Link>
+              <Link href="/signup" className="hover:text-foreground">Create workspace</Link>
             </div>
           </CardContent>
         </Card>

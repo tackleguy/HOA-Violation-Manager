@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { ArrowDownAZ, ArrowUpAZ, ChevronLeft, ChevronRight, Search, SlidersHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 
-export type ModuleRow = Record<string, string | number>;
+export type ModuleRow = Record<string, string | number> & {
+  _id?: string;
+  _href?: string;
+};
 
 type ModuleDataExplorerProps = {
   title: string;
@@ -161,9 +165,18 @@ export function ModuleDataExplorer({
                       <tr key={`${safePage}-${index}-${columns.map((column) => row[column]).join("-")}`} className="border-b last:border-0">
                         {columns.map((column, cellIndex) => {
                           const value = row[column];
+                          const href = row._href;
                           return (
                             <td key={column} className="py-3 pr-4 align-middle">
-                              {cellIndex === columns.length - 1 ? <Badge variant="outline">{value}</Badge> : value}
+                              {cellIndex === 0 && href ? (
+                                <Link href={String(href)} className="font-medium hover:underline">
+                                  {value}
+                                </Link>
+                              ) : cellIndex === columns.length - 1 ? (
+                                <Badge variant="outline">{value}</Badge>
+                              ) : (
+                                value
+                              )}
                             </td>
                           );
                         })}

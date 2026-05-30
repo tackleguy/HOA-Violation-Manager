@@ -1,38 +1,100 @@
 import Link from "next/link";
-import { UserPlus } from "lucide-react";
+import { redirect } from "next/navigation";
+import { KeyRound, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { hasSupabasePublicEnv } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
+import { acceptInvite } from "./actions";
 
-export default function InvitePage() {
+export default async function InvitePage({
+  searchParams
+}: {
+  searchParams: Promise<{ error?: string; message?: string }>;
+}) {
+  const params = await searchParams;
+
+  if (hasSupabasePublicEnv()) {
+    const supabase = await createClient();
+    const {
+      data: { user }
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      redirect("/login?next=/invite&error=Open your invitation email link to continue.");
+    }
+
+    const { data: membership } = await supabase
+      .from("memberships")
+      .select("status")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .maybeSingle();
+
+    if (membership) {
+      redirect("/dashboard");
+    }
+  }
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Accept invitation</CardTitle>
-          <p className="text-sm text-muted-foreground">Use the email address and invite code from your HOAFlow invitation.</p>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="code">Invite code</Label>
-              <Input id="code" />
-            </div>
-            <Button type="button" className="w-full">
-              <UserPlus className="h-4 w-4" />
-              Continue
-            </Button>
-          </form>
-          <Link href="/login" className="mt-5 block text-sm text-muted-foreground hover:text-foreground">
-            Already have access?
-          </Link>
-        </CardContent>
-      </Card>
+    <main className="grid min-h-screen bg-muted/40 lg:grid-cols-[0.95fr_1.05fr]">
+      <section className="hidden border-r bg-secondary p-10 text-secondary-foreground lg:flex lg:flex-col lg:justify-between">
+        <Link href="/" className="flex items-center gap-3 font-semibold">
+          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary">HF</span>
+          HOAFlow
+        </Link>
+        <div>
+          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-lg bg-white/10">
+            <UserPlus className="h-7 w-7" />
+          </div>
+          <h1 className="max-w-xl text-4xl font-semibold">Complete your HOAFlow invitation.</h1>
+          <p className="mt-5 max-w-lg text-secondary-foreground/70">
+            Set your profile details and password to activate your workspace access.
+          </p>
+        </div>
+      </section>
+      <section className="flex items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Accept invitation</CardTitle>
+            <p className="text-sm text-muted-foreground">Finish setting up the account linked to your HOAFlow invite email.</p>
+            {params.error ? <p className="text-sm text-destructive">{params.error}</p> : null}
+            {params.message ? <p className="text-sm text-primary">{params.message}</p> : null}
+          </CardHeader>
+          <CardContent>
+            <form action={acceptInvite} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="full_name">Full name</Label>
+                <Input id="full_name" name="full_name" autoComplete="name" required placeholder="Jordan Lee" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm_password">Confirm password</Label>
+                <Input
+                  id="confirm_password"
+                  name="confirm_password"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                <KeyRound className="h-4 w-4" />
+                Activate account
+              </Button>
+            </form>
+            <Link href="/login" className="mt-5 block text-sm text-muted-foreground hover:text-foreground">
+              Already have access?
+            </Link>
+          </CardContent>
+        </Card>
+      </section>
     </main>
   );
 }

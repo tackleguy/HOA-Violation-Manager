@@ -1,13 +1,17 @@
-import { trendData } from "@/lib/demo-data";
+import type { TrendPoint } from "@/lib/services/dashboard-service";
 
 const width = 640;
 const height = 240;
 const padding = 28;
 
-export function TrendChart() {
-  const maxValue = Math.max(...trendData.flatMap((point) => [point.violations, point.resolved, point.inspections]));
-  const violations = trendData.map((point, index) => toPoint(index, point.violations, maxValue)).join(" ");
-  const resolved = trendData.map((point, index) => toPoint(index, point.resolved, maxValue)).join(" ");
+type TrendChartProps = {
+  data: TrendPoint[];
+};
+
+export function TrendChart({ data }: TrendChartProps) {
+  const maxValue = Math.max(1, ...data.flatMap((point) => [point.violations, point.resolved, point.inspections]));
+  const violations = data.map((point, index) => toPoint(index, point.violations, maxValue, data.length)).join(" ");
+  const resolved = data.map((point, index) => toPoint(index, point.resolved, maxValue, data.length)).join(" ");
   const area = `${padding},${height - padding} ${violations} ${width - padding},${height - padding}`;
 
   return (
@@ -26,8 +30,8 @@ export function TrendChart() {
         <polygon points={area} fill="url(#trendArea)" />
         <polyline points={violations} fill="none" stroke="hsl(var(--primary))" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
         <polyline points={resolved} fill="none" stroke="hsl(var(--accent))" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-        {trendData.map((point, index) => {
-          const [x, y] = toPoint(index, point.violations, maxValue).split(",").map(Number);
+        {data.map((point, index) => {
+          const [x, y] = toPoint(index, point.violations, maxValue, data.length).split(",").map(Number);
           return (
             <g key={point.month}>
               <circle cx={x} cy={y} r="5" fill="hsl(var(--primary))" />
@@ -42,8 +46,9 @@ export function TrendChart() {
   );
 }
 
-function toPoint(index: number, value: number, maxValue: number) {
-  const x = padding + (index / (trendData.length - 1)) * (width - padding * 2);
+function toPoint(index: number, value: number, maxValue: number, length: number) {
+  const divisor = Math.max(length - 1, 1);
+  const x = padding + (index / divisor) * (width - padding * 2);
   const y = height - padding - (value / maxValue) * (height - padding * 2);
   return `${x.toFixed(1)},${y.toFixed(1)}`;
 }

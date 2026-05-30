@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Building2, CheckCircle2, ClipboardCheck, FileText, LockKeyhole, Map, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { ContactForm } from "@/components/marketing/contact-form";
+import { FeatureComparison } from "@/components/marketing/feature-comparison";
+import { PricingTable } from "@/components/marketing/pricing-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +19,6 @@ const features = [
 ];
 
 const benefits = ["Save time", "Reduce paperwork", "Improve compliance", "Increase transparency", "Better board collaboration"];
-const plans = ["Starter", "Professional", "Enterprise"];
 
 export function LandingPage() {
   return (
@@ -149,21 +151,34 @@ export function LandingPage() {
             <h2 className="text-3xl font-semibold">Pricing</h2>
             <p className="mt-3 text-muted-foreground">Flexible tiers for growing HOA operations.</p>
           </div>
-          <Badge variant="outline">Coming Soon</Badge>
+          <Button asChild variant="outline">
+            <Link href="/help/billing">Billing FAQ</Link>
+          </Button>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {plans.map((plan) => (
-            <Card key={plan}>
-              <CardHeader>
-                <CardTitle>{plan}</CardTitle>
-                <Badge variant="warning" className="w-fit">Coming Soon</Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-semibold">$--</div>
-                <p className="mt-3 text-sm text-muted-foreground">Designed for {plan === "Starter" ? "25-100 homes" : plan === "Professional" ? "100-500 homes" : "500+ homes and management companies"}.</p>
-              </CardContent>
-            </Card>
-          ))}
+        <PricingTable />
+        <div className="mt-16">
+          <h3 className="mb-6 text-2xl font-semibold">Compare plans</h3>
+          <FeatureComparison />
+        </div>
+      </section>
+
+      <section id="contact" className="border-y bg-card">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <div>
+            <h2 className="text-3xl font-semibold">Talk with our team</h2>
+            <p className="mt-4 text-muted-foreground">
+              Planning a migration from spreadsheets or legacy HOA software? Tell us about your community and we will recommend the right rollout path.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <Button asChild variant="outline">
+                <Link href="/help/getting-started">Read getting started guide</Link>
+              </Button>
+              <Button asChild variant="ghost">
+                <Link href="/help">Help center</Link>
+              </Button>
+            </div>
+          </div>
+          <ContactForm />
         </div>
       </section>
 
@@ -191,6 +206,7 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
           <div>© 2026 HOAFlow. All rights reserved.</div>
           <div className="flex gap-5 text-secondary-foreground/80">
+            <Link href="/help" className="hover:text-secondary-foreground">Help center</Link>
             <span>Privacy Policy</span>
             <span>Terms</span>
             <span>Contact: hello@hoaflow.com</span>

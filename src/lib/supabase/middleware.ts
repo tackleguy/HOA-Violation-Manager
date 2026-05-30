@@ -3,8 +3,8 @@ import { createServerClient } from "@supabase/ssr";
 import { env, hasSupabasePublicEnv } from "@/lib/env";
 import type { Database } from "@/types/database";
 
-const protectedRoutes = ["/dashboard"];
-const authRoutes = ["/login", "/reset-password", "/invite"];
+const protectedRoutes = ["/dashboard", "/portal"];
+const authRoutes = ["/login", "/reset-password", "/signup"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

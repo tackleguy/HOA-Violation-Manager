@@ -76,7 +76,15 @@ export type Database = {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["memberships"]["Insert"]>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "memberships_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       residents: {
         Row: TenantRow & {
@@ -226,9 +234,126 @@ export type Database = {
         Update: never;
         Relationships: [];
       };
+      notification_preferences: {
+        Row: {
+          id: string;
+          organization_id: string;
+          user_id: string;
+          email_enabled: boolean;
+          in_app_enabled: boolean;
+          digest_frequency: "immediate" | "daily" | "weekly" | "off";
+          channels: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          user_id: string;
+          email_enabled?: boolean;
+          in_app_enabled?: boolean;
+          digest_frequency?: "immediate" | "daily" | "weekly" | "off";
+          channels?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["notification_preferences"]["Insert"]>;
+        Relationships: [];
+      };
+      vendors: {
+        Row: { id: string; organization_id: string; name: string; category: string | null; email: string | null; phone: string | null; notes: string | null; status: string };
+        Insert: { id?: string; organization_id: string; name: string; category?: string | null; email?: string | null; phone?: string | null; notes?: string | null; status?: string };
+        Update: Partial<Database["public"]["Tables"]["vendors"]["Insert"]>;
+        Relationships: [];
+      };
+      board_meetings: {
+        Row: TenantRow & {
+          title: string;
+          meeting_type: string;
+          scheduled_at: string;
+          location: string | null;
+          status: string;
+          agenda_summary: string | null;
+          minutes_summary: string | null;
+        };
+        Insert: TenantInsert & {
+          title: string;
+          meeting_type?: string;
+          scheduled_at: string;
+          location?: string | null;
+          status?: string;
+          agenda_summary?: string | null;
+          minutes_summary?: string | null;
+        };
+        Update: TenantUpdate & Partial<Omit<Database["public"]["Tables"]["board_meetings"]["Insert"], keyof TenantInsert>>;
+        Relationships: [];
+      };
+      meeting_agenda_items: {
+        Row: { id: string; organization_id: string; meeting_id: string; sort_order: number; title: string; description: string | null; presenter: string | null; duration_minutes: number | null };
+        Insert: { id?: string; organization_id: string; meeting_id: string; sort_order?: number; title: string; description?: string | null; presenter?: string | null; duration_minutes?: number | null };
+        Update: Partial<Database["public"]["Tables"]["meeting_agenda_items"]["Insert"]>;
+        Relationships: [];
+      };
+      fines: {
+        Row: { id: string; organization_id: string; violation_id: string | null; property_id: string; resident_id: string | null; amount_cents: number; description: string; status: "issued" | "paid" | "waived" | "overdue"; due_date: string | null; issued_at: string; paid_at: string | null; created_by: string | null };
+        Insert: { id?: string; organization_id: string; violation_id?: string | null; property_id: string; resident_id?: string | null; amount_cents: number; description: string; status?: "issued" | "paid" | "waived" | "overdue"; due_date?: string | null; issued_at?: string; paid_at?: string | null; created_by?: string | null };
+        Update: Partial<Database["public"]["Tables"]["fines"]["Insert"]>;
+        Relationships: [];
+      };
+      fine_payments: {
+        Row: { id: string; organization_id: string; fine_id: string; amount_cents: number; payment_method: string; reference_number: string | null; recorded_by: string | null; created_at: string };
+        Insert: { id?: string; organization_id: string; fine_id: string; amount_cents: number; payment_method: string; reference_number?: string | null; recorded_by?: string | null; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["fine_payments"]["Insert"]>;
+        Relationships: [];
+      };
+      work_orders: {
+        Row: {
+          id: string;
+          organization_id: string;
+          property_id: string | null;
+          title: string;
+          description: string | null;
+          category: string;
+          priority: string;
+          status: "open" | "assigned" | "in_progress" | "completed" | "canceled";
+          assigned_to: string | null;
+          vendor_id: string | null;
+          due_date: string | null;
+          completed_at: string | null;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          property_id?: string | null;
+          title: string;
+          description?: string | null;
+          category?: string;
+          priority?: string;
+          status?: "open" | "assigned" | "in_progress" | "completed" | "canceled";
+          assigned_to?: string | null;
+          vendor_id?: string | null;
+          due_date?: string | null;
+          completed_at?: string | null;
+          created_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["work_orders"]["Insert"]>;
+        Relationships: [];
+      };
+      work_order_comments: {
+        Row: { id: string; organization_id: string; work_order_id: string; body: string; created_by: string | null; created_at: string };
+        Insert: { id?: string; organization_id: string; work_order_id: string; body: string; created_by?: string | null; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["work_order_comments"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      create_organization: {
+        Args: { org_name: string; org_slug: string };
+        Returns: string;
+      };
+    };
     Enums: {
       app_role: AppRole;
     };

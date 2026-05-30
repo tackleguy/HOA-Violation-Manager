@@ -1,14 +1,21 @@
+import Link from "next/link";
 import { Activity, Archive, CalendarPlus, ShieldPlus, UserPlus } from "lucide-react";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { TrendChart } from "@/components/dashboard/trend-chart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { quickActions } from "@/lib/constants";
-import { getDashboardData } from "@/lib/services/dashboard-service";
+import { getDashboardData, getTrendData } from "@/lib/services/dashboard-service";
+
+const quickLinks = [
+  { name: "Create violation", href: "/dashboard/violations", icon: ShieldPlus },
+  { name: "Schedule inspection", href: "/dashboard/inspections", icon: CalendarPlus },
+  { name: "Upload document", href: "/dashboard/documents", icon: Archive },
+  { name: "Add resident", href: "/dashboard/residents", icon: UserPlus }
+];
 
 export default async function DashboardPage() {
-  const { metrics, activityFeed } = await getDashboardData();
+  const [{ metrics, activityFeed }, trendData] = await Promise.all([getDashboardData(), getTrendData()]);
 
   return (
     <div className="space-y-6">
@@ -19,16 +26,20 @@ export default async function DashboardPage() {
           <p className="mt-2 text-muted-foreground">A command center for properties, residents, violations, requests, inspections, and board operations.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {[ShieldPlus, CalendarPlus, Archive, UserPlus].map((Icon, index) => (
-            <Button key={index} variant={index === 0 ? "default" : "outline"} size="icon" aria-label={quickActions[index].name}>
-              <Icon className="h-4 w-4" />
+          {quickLinks.map((action, index) => (
+            <Button key={action.name} variant={index === 0 ? "default" : "outline"} size="icon" asChild aria-label={action.name}>
+              <Link href={action.href}>
+                <action.icon className="h-4 w-4" />
+              </Link>
             </Button>
           ))}
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}
+        {metrics.map((metric) => (
+          <MetricCard key={metric.label} {...metric} />
+        ))}
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[1.5fr_0.8fr]">
@@ -37,7 +48,7 @@ export default async function DashboardPage() {
             <CardTitle>Monthly trends</CardTitle>
           </CardHeader>
           <CardContent>
-            <TrendChart />
+            <TrendChart data={trendData} />
           </CardContent>
         </Card>
         <Card>
