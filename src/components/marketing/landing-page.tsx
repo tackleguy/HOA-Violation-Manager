@@ -1,0 +1,202 @@
+import Link from "next/link";
+import { ArrowRight, Building2, CheckCircle2, ClipboardCheck, FileText, LockKeyhole, Map, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme-toggle";
+
+const features = [
+  { name: "Violation Management", icon: ShieldCheck },
+  { name: "Resident Management", icon: Users },
+  { name: "Property Tracking", icon: Map },
+  { name: "Inspections", icon: ClipboardCheck },
+  { name: "Architectural Reviews", icon: Building2 },
+  { name: "Audit Logs", icon: LockKeyhole },
+  { name: "Document Storage", icon: FileText }
+];
+
+const benefits = ["Save time", "Reduce paperwork", "Improve compliance", "Increase transparency", "Better board collaboration"];
+const plans = ["Starter", "Professional", "Enterprise"];
+
+export function LandingPage() {
+  return (
+    <main>
+      <section className="min-h-[92vh] overflow-hidden border-b bg-[radial-gradient(circle_at_20%_20%,rgba(13,148,136,0.14),transparent_28%),radial-gradient(circle_at_80%_0%,rgba(245,158,11,0.14),transparent_25%)]">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-semibold">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">HF</span>
+            HOAFlow
+          </Link>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button asChild variant="outline">
+              <Link href="/login">Sign in</Link>
+            </Button>
+          </div>
+        </div>
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pb-24">
+          <div className="animate-fade-up">
+            <Badge variant="warning" className="mb-5">
+              <Sparkles className="mr-1 h-3.5 w-3.5" />
+              Enterprise HOA operations, without legacy friction
+            </Badge>
+            <h1 className="max-w-4xl text-5xl font-semibold tracking-normal text-balance sm:text-6xl">
+              HOAFlow
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+              Replace spreadsheets, PDFs, emails, text messages, paper forms, and aging software with one secure operating system for every HOA workflow.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg">
+                <Link href="/login">
+                  Launch dashboard <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="#pricing">View pricing</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="relative min-h-[520px] rounded-lg border bg-card p-4 shadow-soft">
+            <div className="grid h-full gap-4 lg:grid-cols-[220px_1fr]">
+              <div className="rounded-md bg-secondary p-4 text-secondary-foreground">
+                <div className="mb-8 h-8 w-28 rounded bg-white/20" />
+                {["Overview", "Residents", "Violations", "Inspections", "Documents"].map((item) => (
+                  <div key={item} className="mb-2 rounded-md bg-white/10 px-3 py-2 text-sm">{item}</div>
+                ))}
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-3">
+                  {["428", "37", "92%"].map((value, index) => (
+                    <div key={value} className="rounded-md border bg-background p-4">
+                      <div className="text-2xl font-semibold">{value}</div>
+                      <div className="mt-1 text-xs text-muted-foreground">{["Properties", "Active violations", "Resolution rate"][index]}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-md border bg-background p-5">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="font-medium">Violation workflow</div>
+                    <Badge variant="success">Live</Badge>
+                  </div>
+                  <div className="space-y-3">
+                    {["Evidence uploaded", "Warning sent", "Fine pending", "Resolved"].map((step, index) => (
+                      <div key={step} className="flex items-center gap-3">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary">{index + 1}</div>
+                        <div className="h-3 flex-1 rounded bg-muted" />
+                        <span className="w-28 text-xs text-muted-foreground">{step}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-md border bg-background p-5">
+                    <div className="mb-4 text-sm font-medium">Community map</div>
+                    <div className="grid grid-cols-5 gap-2">
+                      {Array.from({ length: 25 }).map((_, index) => (
+                        <div key={index} className={`aspect-square rounded ${index % 7 === 0 ? "bg-accent" : index % 5 === 0 ? "bg-primary" : "bg-muted"}`} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="rounded-md border bg-background p-5">
+                    <div className="mb-4 text-sm font-medium">Audit stream</div>
+                    <div className="space-y-2">
+                      {["Logged inspection", "Uploaded CC&R", "Invited inspector", "Closed violation"].map((item) => (
+                        <div key={item} className="rounded bg-muted px-3 py-2 text-xs">{item}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {features.map(({ name, icon: Icon }) => (
+            <Card key={name}>
+              <CardHeader>
+                <Icon className="h-5 w-5 text-primary" />
+                <CardTitle>{name}</CardTitle>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-y bg-card">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <div>
+            <h2 className="text-3xl font-semibold">Built for every community size.</h2>
+            <p className="mt-4 text-muted-foreground">Small HOAs, large master communities, management companies, board members, inspectors, and community managers all work from the same source of truth.</p>
+          </div>
+          <div className="grid gap-3">
+            {benefits.map((benefit) => (
+              <div key={benefit} className="flex items-center gap-3 rounded-md border bg-background p-4">
+                <CheckCircle2 className="h-5 w-5 text-primary" />
+                <span className="font-medium">{benefit}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mb-10 flex items-end justify-between gap-6">
+          <div>
+            <h2 className="text-3xl font-semibold">Pricing</h2>
+            <p className="mt-3 text-muted-foreground">Flexible tiers for growing HOA operations.</p>
+          </div>
+          <Badge variant="outline">Coming Soon</Badge>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {plans.map((plan) => (
+            <Card key={plan}>
+              <CardHeader>
+                <CardTitle>{plan}</CardTitle>
+                <Badge variant="warning" className="w-fit">Coming Soon</Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-semibold">$--</div>
+                <p className="mt-3 text-sm text-muted-foreground">Designed for {plan === "Starter" ? "25-100 homes" : plan === "Professional" ? "100-500 homes" : "500+ homes and management companies"}.</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-t bg-card">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-3 lg:px-8">
+          {["HOAFlow reduced our board packet prep from days to hours.", "The inspection workflow finally gives us clean evidence and history.", "Residents trust the process because every decision has a record."].map((quote) => (
+            <Card key={quote}>
+              <CardContent className="pt-5 text-sm text-muted-foreground">“{quote}”</CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-semibold">FAQ</h2>
+        {["Does HOAFlow support multiple HOAs?", "Can inspectors upload photos?", "Is pricing available today?"].map((question) => (
+          <div key={question} className="border-b py-5">
+            <h3 className="font-medium">{question}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">Yes. The platform is designed for secure multi-tenant operations, mobile workflows, and staged commercial rollout.</p>
+          </div>
+        ))}
+      </section>
+
+      <footer className="border-t bg-secondary text-secondary-foreground">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+          <div>© 2026 HOAFlow. All rights reserved.</div>
+          <div className="flex gap-5 text-secondary-foreground/80">
+            <span>Privacy Policy</span>
+            <span>Terms</span>
+            <span>Contact: hello@hoaflow.com</span>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
+}
