@@ -2,10 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowDownAZ, ArrowUpAZ, ChevronLeft, ChevronRight, Search, SlidersHorizontal } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ArrowDownAZ, ArrowUpAZ, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -24,7 +22,7 @@ type ModuleDataExplorerProps = {
   rows: ModuleRow[];
 };
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 12;
 
 function formatColumnLabel(column: string) {
   return column.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
@@ -89,139 +87,118 @@ export function ModuleDataExplorer({
   }
 
   if (rows.length === 0) {
-    return <EmptyState icon={Search} title={emptyTitle} description={emptyDescription} action={emptyAction} />;
+    return <EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />;
   }
 
   return (
-    <div className="space-y-3">
-      <Card>
-        <CardContent className="grid gap-2 pt-1 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_160px_160px_auto]">
-          <div className="relative sm:col-span-2 lg:col-span-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-            <Input
-              className="pl-9"
-              placeholder={`Search ${title.toLowerCase()}…`}
-              value={query}
-              onChange={(event) => updateQuery(event.target.value)}
-              aria-label={`Search ${title}`}
-            />
-          </div>
-          <label className="flex h-9 items-center gap-2 rounded-md border border-border/80 bg-background px-3 text-sm shadow-subtle">
-            <SlidersHorizontal className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
-            <select
-              className="min-w-0 flex-1 bg-transparent text-sm outline-none"
-              value={statusFilter}
-              onChange={(event) => updateFilter(event.target.value)}
-              aria-label={`Filter ${title}`}
-            >
-              {filterOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option === "all" ? "All records" : option}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex h-9 items-center gap-2 rounded-md border border-border/80 bg-background px-3 text-sm shadow-subtle">
-            <span className="shrink-0 text-muted-foreground">Sort</span>
-            <select
-              className="min-w-0 flex-1 bg-transparent text-sm outline-none"
-              value={sortColumn}
-              onChange={(event) => setSortColumn(event.target.value)}
-              aria-label={`Sort ${title}`}
-            >
-              {columns.map((column) => (
-                <option key={column} value={column}>
-                  {formatColumnLabel(column)}
-                </option>
-              ))}
-            </select>
-          </label>
+    <div className="section-stack">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <Input
+            className="h-8 border-transparent bg-muted/40 pl-9 shadow-none focus-visible:bg-background"
+            placeholder={`Search ${title.toLowerCase()}…`}
+            value={query}
+            onChange={(event) => updateQuery(event.target.value)}
+            aria-label={`Search ${title}`}
+          />
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <select
+            className="h-8 rounded-md bg-transparent px-2 outline-none hover:bg-muted/40"
+            value={statusFilter}
+            onChange={(event) => updateFilter(event.target.value)}
+            aria-label={`Filter ${title}`}
+          >
+            {filterOptions.map((option) => (
+              <option key={option} value={option}>
+                {option === "all" ? "All" : option}
+              </option>
+            ))}
+          </select>
+          <select
+            className="h-8 rounded-md bg-transparent px-2 outline-none hover:bg-muted/40"
+            value={sortColumn}
+            onChange={(event) => setSortColumn(event.target.value)}
+            aria-label={`Sort ${title}`}
+          >
+            {columns.map((column) => (
+              <option key={column} value={column}>
+                {formatColumnLabel(column)}
+              </option>
+            ))}
+          </select>
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="icon"
+            className="h-8 w-8"
             aria-label={`Sort ${sortDirection === "asc" ? "descending" : "ascending"}`}
             onClick={() => setSortDirection((direction) => (direction === "asc" ? "desc" : "asc"))}
           >
             {sortDirection === "asc" ? <ArrowDownAZ className="h-4 w-4" /> : <ArrowUpAZ className="h-4 w-4" />}
           </Button>
-        </CardContent>
-      </Card>
+          <span className="hidden text-xs tabular-nums sm:inline">
+            {filteredRows.length} records
+          </span>
+        </div>
+      </div>
 
-      <Card className="overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 border-b bg-muted/20 py-3">
-          <CardTitle>{title}</CardTitle>
-          <Badge variant="outline" className="font-normal tabular-nums">
-            {filteredRows.length} of {rows.length}
-          </Badge>
-        </CardHeader>
-        <CardContent className="p-0">
-          {pageRows.length ? (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="sticky top-0 z-10 bg-card text-xs text-muted-foreground">
-                  <tr className="border-b">
-                    {columns.map((column) => (
-                      <th key={column} scope="col" className="px-4 py-2.5 font-medium">
-                        {formatColumnLabel(column)}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {pageRows.map((row, index) => (
-                    <tr
-                      key={`${safePage}-${index}-${columns.map((column) => row[column]).join("-")}`}
-                      className="interactive-row border-b last:border-0"
-                    >
-                      {columns.map((column, cellIndex) => {
-                        const value = row[column];
-                        const href = row._href;
-                        const isStatusColumn = cellIndex === columns.length - 1;
+      {pageRows.length ? (
+        <div className="table-shell">
+          <table className="table-minimal">
+            <thead>
+              <tr>
+                {columns.map((column) => (
+                  <th key={column} scope="col">
+                    {formatColumnLabel(column)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {pageRows.map((row, index) => (
+                <tr key={`${safePage}-${index}-${columns.map((column) => row[column]).join("-")}`} className="interactive-row">
+                  {columns.map((column, cellIndex) => {
+                    const value = row[column];
+                    const href = row._href;
 
-                        return (
-                          <td key={column} className="px-4 py-3 align-middle">
-                            {cellIndex === 0 && href ? (
-                              <Link href={String(href)} className="font-medium text-foreground hover:underline">
-                                {value}
-                              </Link>
-                            ) : isStatusColumn ? (
-                              <Badge variant="outline" className="font-normal">
-                                {value}
-                              </Badge>
-                            ) : (
-                              <span className={cn(isStatusColumn ? "" : "text-foreground/90")}>{value}</span>
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="p-6">
-              <EmptyState icon={Search} title="No matching records" description="Try adjusting your search or filter criteria." />
-            </div>
-          )}
-          <div className="flex flex-col gap-3 border-t bg-muted/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-muted-foreground tabular-nums">
-              Page {safePage} of {pageCount}
-            </p>
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" size="sm" disabled={safePage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-              <Button type="button" variant="outline" size="sm" disabled={safePage === pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                    return (
+                      <td key={column}>
+                        {cellIndex === 0 && href ? (
+                          <Link href={String(href)} className="font-medium text-foreground hover:underline">
+                            {value}
+                          </Link>
+                        ) : (
+                          <span className={cn(cellIndex === columns.length - 1 ? "text-muted-foreground" : "text-foreground")}>{value}</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <EmptyState title="No matching records" description="Adjust search or filters." />
+      )}
+
+      <div className="flex items-center justify-between gap-3 pt-2 text-xs text-muted-foreground">
+        <span className="tabular-nums">
+          Page {safePage} of {pageCount}
+        </span>
+        <div className="flex gap-1">
+          <Button type="button" variant="ghost" size="sm" disabled={safePage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <Button type="button" variant="ghost" size="sm" disabled={safePage === pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

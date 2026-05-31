@@ -4,117 +4,120 @@
 
 @layer base {
   :root {
-    --background: 0 0% 99%;
-    --foreground: 240 10% 4%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
-    --primary: 240 6% 10%;
+    --card-foreground: 0 0% 9%;
+    --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 10%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 6% 10%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 240 6% 10%;
-    --radius: 0.625rem;
-    --sidebar-width: 15.5rem;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
+    --radius: 0.5rem;
+    --sidebar-width: 14rem;
   }
 
   .dark {
-    --background: 240 10% 4%;
+    --background: 0 0% 4%;
     --foreground: 0 0% 98%;
-    --card: 240 6% 7%;
+    --card: 0 0% 4%;
     --card-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
-    --primary-foreground: 240 6% 10%;
-    --secondary: 240 4% 12%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 12%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 240 4% 14%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 12%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 63% 45%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 240 5% 84%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 0 0% 84%;
   }
 
   * {
     @apply border-border;
   }
 
-  html {
-    @apply scroll-smooth;
-  }
-
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    font-feature-settings: "rlig" 1, "calt" 1;
     text-rendering: optimizeLegibility;
   }
 }
 
 @layer components {
   .focus-ring {
-    @apply outline-none ring-offset-background transition-shadow focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply outline-none transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 
   .page-container {
-    @apply mx-auto w-full max-w-[1400px];
+    @apply mx-auto w-full max-w-[1200px];
   }
 
   .page-stack {
-    @apply space-y-5;
+    @apply space-y-10;
   }
 
-  .surface {
-    @apply rounded-lg border bg-card;
-  }
-
-  .surface-muted {
-    @apply rounded-lg border border-border/60 bg-muted/30;
+  .section-stack {
+    @apply space-y-6;
   }
 
   .text-label {
-    @apply text-xs font-medium uppercase tracking-wide text-muted-foreground;
+    @apply text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground;
   }
 
   .data-value {
-    @apply font-semibold tabular-nums tracking-tight text-foreground;
+    @apply font-medium tabular-nums tracking-tight text-foreground;
   }
 
   .interactive-row {
-    @apply transition-colors hover:bg-muted/50;
+    @apply transition-colors hover:bg-muted/40;
   }
 
   .nav-item {
-    @apply focus-ring flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground;
+    @apply focus-ring flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground;
   }
 
   .nav-item-active {
-    @apply bg-muted text-foreground shadow-sm;
-  }
-}
-
-@layer utilities {
-  .animate-in {
-    animation: animate-in 200ms ease-out both;
+    @apply bg-muted/60 font-medium text-foreground;
   }
 
-  @keyframes animate-in {
-    from {
-      opacity: 0;
-      transform: translateY(4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .table-shell {
+    @apply w-full overflow-x-auto;
+  }
+
+  .table-minimal {
+    @apply w-full min-w-[640px] text-left text-sm;
+  }
+
+  .table-minimal thead {
+    @apply sticky top-0 z-10 bg-background text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground;
+  }
+
+  .table-minimal th {
+    @apply border-b px-3 py-2 font-medium;
+  }
+
+  .table-minimal td {
+    @apply border-b px-3 py-2.5 align-middle;
+  }
+
+  .table-minimal tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .divider-y > * + * {
+    @apply border-t border-border/80;
   }
 }

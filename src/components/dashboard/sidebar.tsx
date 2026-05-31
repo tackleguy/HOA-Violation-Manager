@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navigation, navigationGroups } from "@/lib/constants";
+import { navigation } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+
+type SidebarProps = {
+  orgName?: string;
+  roleLabel?: string;
+};
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const navByName = new Map(navigation.map((item) => [item.name, item]));
 
   function isActive(href: string) {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -15,71 +19,70 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <nav className="space-y-5" aria-label="Main navigation">
-      {navigationGroups.map((group) => (
-        <div key={group.label}>
-          <p className="mb-1.5 px-2.5 text-2xs font-medium uppercase tracking-wider text-muted-foreground">{group.label}</p>
-          <ul className="space-y-0.5">
-            {group.items.map((name) => {
-              const item = navByName.get(name);
-              if (!item) return null;
-              const active = isActive(item.href);
-              return (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    onClick={onNavigate}
-                    aria-current={active ? "page" : undefined}
-                    className={cn("nav-item", active && "nav-item-active")}
-                  >
-                    <item.icon className={cn("h-4 w-4 shrink-0", active ? "text-foreground" : "text-muted-foreground")} aria-hidden />
-                    <span className="truncate">{item.name}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
+    <nav className="space-y-0.5" aria-label="Main navigation">
+      {navigation.map((item) => {
+        const active = isActive(item.href);
+        return (
+          <Link
+            key={item.name}
+            href={item.href}
+            onClick={onNavigate}
+            aria-current={active ? "page" : undefined}
+            className={cn("nav-item", active && "nav-item-active")}
+          >
+            <item.icon className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
+            <span className="truncate">{item.name}</span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }
 
 function BrandMark() {
   return (
-    <Link href="/dashboard" className="focus-ring group flex items-center gap-2.5 rounded-md px-1 py-1">
-      <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground transition-transform group-hover:scale-[1.02]">
-        HF
-      </span>
-      <span className="text-sm font-semibold tracking-tight">HOAFlow</span>
+    <Link href="/dashboard" className="focus-ring text-sm font-medium tracking-tight text-foreground">
+      HOAFlow
     </Link>
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ orgName, roleLabel }: SidebarProps) {
   return (
-    <aside className="hidden min-h-screen border-r bg-card/50 lg:block">
-      <div className="sticky top-0 flex h-screen flex-col">
-        <div className="border-b px-4 py-4">
+    <aside className="hidden min-h-screen border-r border-border/80 bg-background lg:block">
+      <div className="sticky top-0 flex h-screen flex-col px-3 py-5">
+        <div className="mb-8 px-2">
           <BrandMark />
         </div>
-        <div className="flex-1 overflow-y-auto px-3 py-4">
+        <div className="flex-1 overflow-y-auto px-1">
           <NavLinks />
         </div>
+        {orgName ? (
+          <div className="mt-8 border-t border-border/80 px-2 pt-4">
+            <p className="truncate text-sm font-medium text-foreground">{orgName}</p>
+            {roleLabel ? <p className="truncate text-xs text-muted-foreground">{roleLabel}</p> : null}
+          </div>
+        ) : null}
       </div>
     </aside>
   );
 }
 
-export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+export function SidebarNav({ onNavigate, orgName, roleLabel }: SidebarProps & { onNavigate?: () => void }) {
   return (
-    <div className="flex h-full flex-col">
-      <div className="border-b px-4 py-4">
+    <div className="flex h-full flex-col px-3 py-5">
+      <div className="mb-8 px-2">
         <BrandMark />
       </div>
-      <div className="flex-1 overflow-y-auto px-3 py-4">
+      <div className="flex-1 overflow-y-auto px-1">
         <NavLinks onNavigate={onNavigate} />
       </div>
+      {orgName ? (
+        <div className="mt-8 border-t border-border/80 px-2 pt-4">
+          <p className="truncate text-sm font-medium text-foreground">{orgName}</p>
+          {roleLabel ? <p className="truncate text-xs text-muted-foreground">{roleLabel}</p> : null}
+        </div>
+      ) : null}
     </div>
   );
 }

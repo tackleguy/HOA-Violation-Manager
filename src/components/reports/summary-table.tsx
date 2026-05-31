@@ -1,5 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 type SummaryTableProps = {
   title: string;
   columns: string[];
@@ -9,40 +7,34 @@ type SummaryTableProps = {
 
 export function SummaryTable({ title, columns, rows, emptyMessage = "No data available." }: SummaryTableProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {rows.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-left text-muted-foreground">
+    <div className="section-stack">
+      <h2 className="text-sm font-medium">{title}</h2>
+      {rows.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="table-minimal">
+            <thead>
+              <tr>
+                {columns.map((column) => (
+                  <th key={column} className="capitalize">
+                    {column.replace(/_/g, " ")}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, index) => (
+                <tr key={index}>
                   {columns.map((column) => (
-                    <th key={column} className="px-3 py-2 font-medium capitalize">
-                      {column.replace(/_/g, " ")}
-                    </th>
+                    <td key={column}>{row[column]}</td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, index) => (
-                  <tr key={index} className="border-b last:border-0">
-                    {columns.map((column) => (
-                      <td key={column} className="px-3 py-2">
-                        {row[column]}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }

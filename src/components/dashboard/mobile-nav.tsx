@@ -7,19 +7,24 @@ import { SidebarNav } from "@/components/dashboard/sidebar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
-export function MobileNav() {
+type MobileNavProps = {
+  orgName?: string;
+  roleLabel?: string;
+};
+
+export function MobileNav({ orgName, roleLabel }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation menu">
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] p-0">
+      <SheetContent side="left" className="w-[260px] p-0">
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-        <SidebarNav onNavigate={() => setOpen(false)} />
+        <SidebarNav orgName={orgName} roleLabel={roleLabel} onNavigate={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   );
@@ -27,7 +32,7 @@ export function MobileNav() {
 
 export function MobileBrand() {
   return (
-    <Link href="/dashboard" className="focus-ring truncate text-sm font-semibold tracking-tight lg:hidden">
+    <Link href="/dashboard" className="focus-ring truncate text-sm font-medium lg:hidden">
       HOAFlow
     </Link>
   );

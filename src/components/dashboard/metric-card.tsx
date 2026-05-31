@@ -1,21 +1,21 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-type MetricCardProps = {
+type MetricStatProps = {
   label: string;
   value: string;
-  delta: string;
+  delta?: string;
   className?: string;
 };
 
-export function MetricCard({ label, value, delta, className }: MetricCardProps) {
+export function MetricStat({ label, value, delta, className }: MetricStatProps) {
   return (
-    <Card className={cn("transition-shadow hover:shadow-card", className)}>
-      <CardContent className="space-y-3 pt-1">
-        <p className="text-label">{label}</p>
-        <p className="data-value text-3xl">{value}</p>
-        <p className="text-xs text-muted-foreground">{delta}</p>
-      </CardContent>
-    </Card>
+    <div className={cn("min-w-[8rem] space-y-1", className)}>
+      <p className="text-label">{label}</p>
+      <p className="data-value text-2xl">{value}</p>
+      {delta ? <p className="text-xs text-muted-foreground">{delta}</p> : null}
+    </div>
   );
 }
+
+/** @deprecated Use MetricStat */
+export const MetricCard = MetricStat;

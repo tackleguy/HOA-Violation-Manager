@@ -1,12 +1,9 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { Bell, CheckCheck } from "lucide-react";
 import { useOptimistic, useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 export type NotificationItem = {
@@ -54,64 +51,53 @@ export function NotificationPanel({ notifications, markReadAction, markAllReadAc
   }
 
   return (
-    <Card className={cn(className)}>
-      <CardHeader className="flex flex-row items-start justify-between space-y-0">
+    <div className={cn("space-y-4", className)}>
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            Notifications
-          </CardTitle>
-          <CardDescription>
-            {unreadCount > 0 ? `${unreadCount} unread` : "You're all caught up"}
-          </CardDescription>
+          <h2 className="text-sm font-medium">Notifications</h2>
+          <p className="text-xs text-muted-foreground">{unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}</p>
         </div>
         {unreadCount > 0 ? (
-          <Button variant="outline" size="sm" disabled={isPending} onClick={handleMarkAllRead}>
-            <CheckCheck className="h-4 w-4" />
+          <Button variant="ghost" size="sm" disabled={isPending} onClick={handleMarkAllRead}>
             Mark all read
           </Button>
         ) : null}
-      </CardHeader>
-      <CardContent className="p-0">
-        {optimisticNotifications.length === 0 ? (
-          <div className="p-5">
-            <EmptyState icon={Bell} title="No notifications" description="Updates about violations, requests, and team activity will appear here." />
-          </div>
-        ) : (
-          <ul>
-            {optimisticNotifications.map((notification, index) => {
-              const isUnread = !notification.read_at;
-              return (
-                <li key={notification.id}>
-                  <button
-                    type="button"
-                    className={cn(
-                      "focus-ring w-full px-5 py-4 text-left transition-colors hover:bg-muted/50",
-                      isUnread && "bg-primary/5"
-                    )}
-                    onClick={() => {
-                      if (isUnread) handleMarkRead(notification.id);
-                    }}
-                    disabled={isPending}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1">
-                        <p className={cn("text-sm", isUnread ? "font-medium" : "text-muted-foreground")}>{notification.title}</p>
-                        {notification.body ? <p className="text-sm text-muted-foreground">{notification.body}</p> : null}
-                      </div>
-                      {isUnread ? <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden /> : null}
+      </div>
+      {optimisticNotifications.length === 0 ? (
+        <EmptyState title="No notifications" description="Updates about violations, requests, and team activity will appear here." />
+      ) : (
+        <ul className="divider-y border-t border-border/80">
+          {optimisticNotifications.map((notification) => {
+            const isUnread = !notification.read_at;
+            return (
+              <li key={notification.id}>
+                <button
+                  type="button"
+                  className={cn(
+                    "focus-ring w-full py-3 text-left transition-colors hover:bg-muted/30",
+                    isUnread && "font-medium"
+                  )}
+                  onClick={() => {
+                    if (isUnread) handleMarkRead(notification.id);
+                  }}
+                  disabled={isPending}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 space-y-1">
+                      <p className={cn("text-sm", !isUnread && "text-muted-foreground")}>{notification.title}</p>
+                      {notification.body ? <p className="text-sm font-normal text-muted-foreground">{notification.body}</p> : null}
                     </div>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                    </p>
-                  </button>
-                  {index < optimisticNotifications.length - 1 ? <Separator /> : null}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+                    {isUnread ? <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-foreground" aria-hidden /> : null}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                  </p>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
