@@ -23,9 +23,13 @@ export const appRoleSchema = z.enum([
 ]);
 
 export const violationStatusSchema = z.enum([
+  "draft",
   "open",
   "under_review",
+  "notice_sent",
   "warning_sent",
+  "hearing_scheduled",
+  "appealed",
   "fine_pending",
   "resolved",
   "closed"
@@ -105,6 +109,30 @@ export const violationPhotoSchema = z.object({
   violation_id: uuidField,
   caption: optionalText
 });
+
+export const createViolationNoticeSchema = z.object({
+  violation_id: uuidField,
+  notice_type: z.string().trim().min(1).default("warning"),
+  delivery_method: z.string().trim().min(1).default("mail"),
+  delivery_status: z.enum(["draft", "sent", "delivered", "failed", "acknowledged"]).default("draft"),
+  subject: z.string().trim().min(1),
+  body: z.string().trim().min(1)
+});
+
+export const createViolationHearingSchema = z.object({
+  violation_id: uuidField,
+  scheduled_at: z.string().trim().min(1),
+  location: optionalText,
+  status: z.enum(["scheduled", "completed", "continued", "canceled", "no_show"]).default("scheduled"),
+  outcome_notes: optionalText
+});
+
+export const createCategorySchema = z.object({
+  name: z.string().trim().min(1),
+  default_severity: violationSeveritySchema.default("medium")
+});
+
+export const deleteCategorySchema = z.object({ id: uuidField });
 
 export const architecturalFieldsSchema = z.object({
   property_id: uuidField,

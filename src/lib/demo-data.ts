@@ -1,10 +1,10 @@
 export const metrics = [
-  { label: "Total properties", value: "428", delta: "+12 this month" },
-  { label: "Total residents", value: "1,184", delta: "+34 this month" },
-  { label: "Active violations", value: "37", delta: "-18% vs last month" },
+  { label: "Open violations", value: "37", delta: "Active workflow items" },
   { label: "Resolved violations", value: "214", delta: "92% on-time rate" },
-  { label: "Pending requests", value: "16", delta: "6 awaiting board review" },
-  { label: "Scheduled inspections", value: "42", delta: "Next 30 days" }
+  { label: "Overdue violations", value: "8", delta: "Past due date" },
+  { label: "Scheduled hearings", value: "4", delta: "Next 30 days" },
+  { label: "Outstanding fines", value: "12", delta: "Issued or overdue" },
+  { label: "Scheduled inspections", value: "42", delta: "Upcoming" }
 ];
 
 export const trendData = [

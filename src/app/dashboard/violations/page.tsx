@@ -1,7 +1,6 @@
 import { ShieldCheck } from "lucide-react";
 import { ModulePage } from "@/components/dashboard/module-page";
 import { RecordForm } from "@/components/dashboard/record-form";
-import { formatLabel } from "@/lib/format";
 import { getViolationRows } from "@/lib/services/dashboard-service";
 import { getCategories, getProperties, getResidents } from "@/lib/services/reference-data-service";
 import { createViolation } from "../actions";
@@ -61,7 +60,7 @@ export default async function ViolationsPage({
               label: "Severity",
               type: "select",
               defaultValue: "medium",
-              selectOptions: ["low", "medium", "high", "critical"].map((value) => ({ value, label: formatLabel(value) }))
+              selectOptions: ["low", "medium", "high", "critical"].map((value) => ({ value, label: value.charAt(0).toUpperCase() + value.slice(1) }))
             },
             { name: "due_date", label: "Due date", type: "date" }
           ]}

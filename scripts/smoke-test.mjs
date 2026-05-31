@@ -12,6 +12,9 @@ await check("landing page", "/", {
 });
 
 await check("dashboard", "/dashboard", { status: 200 });
+await check("violations dashboard", "/dashboard/violations", { status: 200 });
+await check("reports dashboard", "/dashboard/reports", { status: 200 });
+await check("help center", "/help", { status: 200 });
 await check("documents dashboard", "/dashboard/documents", { status: 200 });
 await check("update password", "/update-password", { status: 200 });
 

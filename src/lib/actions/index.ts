@@ -10,6 +10,7 @@ export * from "./meetings";
 export * from "./work-orders";
 export * from "./vendors";
 export * from "./settings";
+export * from "./categories";
 export * from "./notifications";
 export * from "./organization";
 export * from "./reports";

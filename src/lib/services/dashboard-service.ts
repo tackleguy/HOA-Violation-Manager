@@ -11,6 +11,12 @@ import {
   violations as demoViolations
 } from "@/lib/demo-data";
 import { roles } from "@/lib/constants";
+import {
+  countOutstandingFines,
+  countOverdueViolations,
+  countScheduledHearings
+} from "@/lib/services/violation-workflow-service";
+import { ACTIVE_VIOLATION_STATUSES } from "@/lib/violation-workflow";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getDefaultOrganizationId } from "@/lib/services/organization-service";
 import { createClient } from "@/lib/supabase/server";
@@ -32,21 +38,24 @@ export async function getDashboardData(): Promise<DashboardData> {
   if (!context) return { metrics: demoMetrics, activityFeed };
 
   const { supabase, organizationId } = context;
-  const [properties, residents, activeViolations, resolvedViolations, pendingRequests, scheduledInspections, logs] =
-    await Promise.all([
-      supabase.from("properties").select("id", { count: "exact", head: true }).eq("organization_id", organizationId),
-      supabase.from("residents").select("id", { count: "exact", head: true }).eq("organization_id", organizationId),
+  const [
+    activeViolations,
+    resolvedViolations,
+    overdueViolations,
+    scheduledHearings,
+    outstandingFines,
+    scheduledInspections,
+    logs
+  ] = await Promise.all([
       supabase
         .from("violations")
         .select("id", { count: "exact", head: true })
         .eq("organization_id", organizationId)
-        .in("status", ["open", "under_review", "warning_sent", "fine_pending"]),
+        .in("status", ACTIVE_VIOLATION_STATUSES),
       supabase.from("violations").select("id", { count: "exact", head: true }).eq("organization_id", organizationId).eq("status", "resolved"),
-      supabase
-        .from("architectural_requests")
-        .select("id", { count: "exact", head: true })
-        .eq("organization_id", organizationId)
-        .in("status", ["submitted", "under_review", "board_review"]),
+      countOverdueViolations(),
+      countScheduledHearings(),
+      countOutstandingFines(),
       supabase
         .from("inspections")
         .select("id", { count: "exact", head: true })
@@ -62,11 +71,11 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   return {
     metrics: [
-      { label: "Total properties", value: String(properties.count ?? 0), delta: "Live tenant count" },
-      { label: "Total residents", value: String(residents.count ?? 0), delta: "Live tenant count" },
-      { label: "Active violations", value: String(activeViolations.count ?? 0), delta: "Open workflow items" },
+      { label: "Open violations", value: String(activeViolations.count ?? 0), delta: "Active workflow items" },
       { label: "Resolved violations", value: String(resolvedViolations.count ?? 0), delta: "Closed compliance work" },
-      { label: "Pending requests", value: String(pendingRequests.count ?? 0), delta: "Needs review" },
+      { label: "Overdue violations", value: String(overdueViolations), delta: "Past due date" },
+      { label: "Scheduled hearings", value: String(scheduledHearings), delta: "Upcoming violation hearings" },
+      { label: "Outstanding fines", value: String(outstandingFines), delta: "Issued or overdue" },
       { label: "Scheduled inspections", value: String(scheduledInspections.count ?? 0), delta: "Upcoming and in progress" }
     ],
     activityFeed:

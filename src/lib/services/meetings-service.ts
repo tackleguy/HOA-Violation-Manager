@@ -1,5 +1,5 @@
 import { hasSupabasePublicEnv } from "@/lib/env";
-import { formatDate, formatDateTime, formatLabel } from "@/lib/format";
+import { formatDateTime, formatLabel } from "@/lib/format";
 import { getDefaultOrganizationId } from "@/lib/services/organization-service";
 import { createClient } from "@/lib/supabase/server";
 

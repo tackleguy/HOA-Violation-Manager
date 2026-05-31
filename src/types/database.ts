@@ -1,6 +1,17 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 type AppRole = "super_admin" | "hoa_admin" | "board_member" | "community_manager" | "inspector" | "read_only";
+type ViolationStatus =
+  | "draft"
+  | "open"
+  | "under_review"
+  | "notice_sent"
+  | "warning_sent"
+  | "hearing_scheduled"
+  | "appealed"
+  | "fine_pending"
+  | "resolved"
+  | "closed";
 type TenantRow = { id: string; organization_id: string; created_at: string; updated_at: string };
 type TenantInsert = { id?: string; organization_id: string; created_at?: string; updated_at?: string };
 type TenantUpdate = Partial<TenantInsert>;
@@ -142,7 +153,7 @@ export type Database = {
           resident_id: string | null;
           category_id: string | null;
           description: string;
-          status: "open" | "under_review" | "warning_sent" | "fine_pending" | "resolved" | "closed";
+          status: ViolationStatus;
           severity: "low" | "medium" | "high" | "critical";
           due_date: string | null;
           resolved_at: string | null;
@@ -153,7 +164,7 @@ export type Database = {
           resident_id?: string | null;
           category_id?: string | null;
           description: string;
-          status?: "open" | "under_review" | "warning_sent" | "fine_pending" | "resolved" | "closed";
+          status?: ViolationStatus;
           severity?: "low" | "medium" | "high" | "critical";
           due_date?: string | null;
           resolved_at?: string | null;
@@ -172,6 +183,88 @@ export type Database = {
         Row: { id: string; organization_id: string; violation_id: string; body: string; created_by: string | null; created_at: string };
         Insert: { id?: string; organization_id: string; violation_id: string; body: string; created_by?: string | null; created_at?: string };
         Update: Partial<Database["public"]["Tables"]["violation_comments"]["Insert"]>;
+        Relationships: [];
+      };
+      violation_notices: {
+        Row: {
+          id: string;
+          organization_id: string;
+          violation_id: string;
+          notice_type: string;
+          delivery_method: string;
+          delivery_status: string;
+          subject: string;
+          body: string;
+          sent_at: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          violation_id: string;
+          notice_type?: string;
+          delivery_method?: string;
+          delivery_status?: string;
+          subject: string;
+          body: string;
+          sent_at?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["violation_notices"]["Insert"]>;
+        Relationships: [];
+      };
+      violation_hearings: {
+        Row: {
+          id: string;
+          organization_id: string;
+          violation_id: string;
+          scheduled_at: string;
+          location: string | null;
+          status: string;
+          outcome_notes: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          violation_id: string;
+          scheduled_at: string;
+          location?: string | null;
+          status?: string;
+          outcome_notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["violation_hearings"]["Insert"]>;
+        Relationships: [];
+      };
+      violation_status_history: {
+        Row: {
+          id: string;
+          organization_id: string;
+          violation_id: string;
+          from_status: string | null;
+          to_status: string;
+          notes: string | null;
+          changed_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          violation_id: string;
+          from_status?: string | null;
+          to_status: string;
+          notes?: string | null;
+          changed_by?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["violation_status_history"]["Insert"]>;
         Relationships: [];
       };
       architectural_requests: {

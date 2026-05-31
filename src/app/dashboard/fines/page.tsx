@@ -1,7 +1,6 @@
 import { CircleDollarSign } from "lucide-react";
 import { ModulePage } from "@/components/dashboard/module-page";
 import { RecordForm } from "@/components/dashboard/record-form";
-import { formatLabel } from "@/lib/format";
 import { getFineRows, getViolationOptions } from "@/lib/services/fines-service";
 import { getProperties, getResidents } from "@/lib/services/reference-data-service";
 import { createFine } from "../actions";

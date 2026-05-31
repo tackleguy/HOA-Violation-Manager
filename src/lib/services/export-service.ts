@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { hasSupabasePublicEnv } from "@/lib/env";
-import { formatDate, formatLabel } from "@/lib/format";
+import { formatLabel } from "@/lib/format";
 import { buildReportExportData } from "@/lib/services/reports-service";
 import { getDefaultOrganizationId } from "@/lib/services/organization-service";
 import { createClient } from "@/lib/supabase/server";

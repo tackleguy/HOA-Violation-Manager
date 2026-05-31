@@ -1,17 +1,16 @@
-# HOAFlow
+# HOAFlow — HOA Violation Manager
 
-HOAFlow is a production-oriented SaaS starter for modern homeowner association management. It replaces spreadsheets, PDFs, email chains, text messages, and paper forms with a centralized cloud platform for violations, residents, properties, inspections, architectural requests, documents, communications, and audit history.
+HOAFlow is a production-oriented SaaS platform for homeowner association operations: violations, properties, residents, notices, hearings, fines, evidence, inspections, documents, communications, and audit history.
 
 ## Stack
 
-- Next.js 15 App Router
-- React 19
-- TypeScript
-- Tailwind CSS with shadcn-style components
-- Supabase Auth, Postgres, Storage, and Realtime-ready schema
-- Vercel deployment configuration
+- Next.js 15 App Router, React 19, TypeScript
+- Tailwind CSS + shadcn-style Radix components
+- Supabase Auth, Postgres (RLS), Storage
+- Zod validation, Vitest tests
+- Vercel deployment
 
-## Local Setup
+## Quick Start
 
 ```bash
 npm install
@@ -19,27 +18,30 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Set these environment variables:
+Open [http://localhost:3000](http://localhost:3000). Without Supabase credentials the app runs in **demo mode** with seeded sample data. Add credentials to `.env.local` for auth and persistence.
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
+## Environment Variables
 
-Only use `SUPABASE_SERVICE_ROLE_KEY` in server-only scripts or jobs. Never expose it in browser code.
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Production | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Production | Public anon/publishable key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only | Invites, org settings, admin jobs |
+| `NEXT_PUBLIC_APP_URL` | Yes | Auth redirect base (e.g. `http://localhost:3000`) |
+| `HOAFLOW_SMOKE_BASE_URL` | Optional | Smoke test target (default `http://127.0.0.1:3000`) |
 
-## Supabase
+Never expose `SUPABASE_SERVICE_ROLE_KEY` in browser code.
 
-The repository includes:
+## Database
 
-- `supabase/config.toml`
-- `supabase/migrations/20260530000000_initial_schema.sql`
-- `supabase/seed.sql`
-- `.mcp.json` for the project-scoped Supabase MCP server
+Migrations in `supabase/migrations/`:
 
-Apply the schema with the Supabase CLI after linking the project:
+1. `20260530000000_initial_schema.sql` — core tables, RLS, audit triggers
+2. `20260530000001_platform_enhancements.sql` — org creation, notification prefs
+3. `20260530000002_operations_modules.sql` — fines, meetings, work orders, vendors
+4. `20260530000003_violation_workflow.sql` — notices, hearings, status history
+
+Apply with the Supabase CLI:
 
 ```bash
 supabase link --project-ref ckussqxgvuclnkrgwzaz
@@ -47,63 +49,88 @@ supabase db push
 supabase db seed
 ```
 
-The migration enables RLS on every application table, isolates all tenant data by `organization_id`, and creates private storage buckets for documents and violation evidence. Storage object paths should start with the organization UUID, for example:
+Storage buckets: `hoa-documents`, `violation-evidence`. Object paths must start with the organization UUID.
 
-```text
-00000000-0000-4000-8000-000000000001/violations/photo-1.jpg
-```
+## Violation Workflow
 
-Dashboard pages use tenant-aware server loaders. When Supabase environment variables and an authenticated membership are available, tables are read through RLS. Without local credentials, the app falls back to polished demo data so the product can still be reviewed.
+Supported statuses: `draft`, `open`, `under_review`, `notice_sent`, `warning_sent`, `hearing_scheduled`, `appealed`, `fine_pending`, `resolved`, `closed`.
+
+The violation detail page (`/dashboard/violations/[id]`) includes:
+
+- Status workflow with history timeline
+- Notices (create and track delivery state)
+- Hearings (schedule, location, outcome)
+- Linked fines
+- Comments, evidence attachments, edit form
+
+Dashboard KPIs: open violations, resolved, overdue, scheduled hearings, outstanding fines, inspections.
 
 ## Product Surface
 
-- Landing page with hero, features, benefits, testimonials, pricing, FAQ, and footer
-- Supabase-backed login, magic-link, auth callback, and password recovery flow
-- Protected dashboard routes
-- Command menu with `Cmd/Ctrl + K`
-- Light and dark mode
-- Dashboard overview metrics, trend analytics, activity feed, and quick actions
-- Modules for residents, properties, violations, architectural requests, inspections, documents, communications, audit activity, and settings
-- Server-action workflows for creating core records, scheduling inspections, sending password resets, inviting users, and uploading document versions or violation evidence
-- Loading, empty, and error states
+- Marketing landing page, help center, resident portal
+- Auth: signup, login, magic link, password reset, invite accept
+- Dashboard modules: residents, properties, violations, architecture, inspections, documents, communications, activity, settings, reports, calendar, search
+- Operations: fines, board meetings, work orders, vendors
+- CSV export/import, global command menu (`Cmd/Ctrl + K`), light/dark mode
 
-## Security Notes
+## Scripts
 
-- RLS is enabled on every table in the public schema.
-- Tenant access is enforced through active memberships.
-- Write policies require a tenant membership role with write permission.
-- Private helper functions live in a non-exposed `private` schema to avoid recursive membership policies.
-- File storage policies validate organization membership from the first path segment.
-- Upload actions write to private buckets using organization-prefixed paths and then record metadata in Postgres.
-- Auth users are mirrored into `profiles` by a private database trigger.
-- Tenant tables have database-level audit triggers that append activity log events for inserts, updates, and deletes.
-- Authorization should remain server-side for future route handlers and server actions.
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run start` | Serve production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript check |
+| `npm test` | Vitest unit tests |
+| `npm run verify` | Project structure validation |
+| `npm run smoke` | HTTP smoke tests (requires running server) |
 
-## API
+Full validation:
 
-Tenant-scoped route handlers are available under `/api` for residents, properties, violations, documents, architectural requests, inspections, and activity logs. See `docs/api.md` for request shapes and auth behavior.
+```bash
+npm run lint && npm run typecheck && npm test && npm run build && npm run verify
+npm run dev   # separate terminal
+npm run smoke
+```
 
 ## Deployment
 
 1. Create a Vercel project from this repository.
-2. Add the environment variables from `.env.example`.
-3. Link the Supabase project and apply migrations.
-4. Configure Supabase Auth redirect URLs for your Vercel domain.
-5. Deploy with `npm run build` or Vercel’s default Next.js pipeline.
+2. Set all environment variables from `.env.example`.
+3. Apply Supabase migrations and configure Auth redirect URLs.
+4. Deploy — Vercel uses `npm install` + `npm run build` (see `vercel.json`).
 
-See `docs/deployment.md` for the full deployment runbook and smoke-test checklist.
-
-## Verification
+Post-deploy:
 
 ```bash
-npm run verify
-npm run typecheck
-npm run lint
-npm run build
-npm audit --omit=dev
-npm run smoke
+curl https://your-domain.com/api/health
+HOAFLOW_SMOKE_BASE_URL=https://your-domain.com npm run smoke
 ```
 
-`npm run smoke` expects a running app and uses `HOAFLOW_SMOKE_BASE_URL` when checking a deployed environment.
+See `docs/deployment.md` for the full runbook.
 
-CI runs the same gates in `.github/workflows/ci.yml`.
+## Documentation
+
+| Doc | Contents |
+|-----|----------|
+| `docs/repo-audit.md` | Stack audit, gaps, repair strategy |
+| `docs/rebuild-plan.md` | Implementation plan |
+| `docs/security-review.md` | Security findings and fixes |
+| `docs/verification.md` | Validation results and run steps |
+| `docs/api.md` | REST API reference |
+| `docs/deployment.md` | Deploy runbook |
+
+## Security
+
+- RLS on every application table; tenant isolation by `organization_id`
+- Server-side authorization in all mutation actions
+- Private storage buckets with org-scoped policies
+- Database audit triggers on tenant tables
+- Service role used only for admin operations (invites, org settings)
+
+## Limitations
+
+- Evidence upload on violation create form not yet implemented (available on detail page)
+- No Playwright/Cypress E2E suite (HTTP smoke + unit tests)
+- Category delete action exists but no settings UI button yet

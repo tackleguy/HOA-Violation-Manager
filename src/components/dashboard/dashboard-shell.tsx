@@ -9,6 +9,7 @@ import { CommandMenu } from "@/components/command-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { getRoleLabel } from "@/lib/permissions";
+import { hasSupabasePublicEnv } from "@/lib/env";
 import { getNotificationRows, getUnreadNotificationCount } from "@/lib/services/notification-service";
 import { switchOrganization } from "@/app/dashboard/actions";
 import { getCurrentMemberships, getOrganizationContext } from "@/lib/services/organization-service";
@@ -28,7 +29,7 @@ export async function DashboardShell({ children }: { children: React.ReactNode }
       email: data?.email ?? "",
       avatarUrl: data?.avatar_url ?? null
     };
-  } else {
+  } else if (hasSupabasePublicEnv()) {
     const supabase = await createClient();
     const {
       data: { user }

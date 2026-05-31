@@ -6,15 +6,25 @@ import { DetailPage } from "@/components/dashboard/detail-page";
 import { RecordForm } from "@/components/dashboard/record-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCents } from "@/lib/utils/currency";
 import { formatDate, formatDateTime, formatLabel } from "@/lib/format";
 import { getCategories, getProperties, getResidents } from "@/lib/services/reference-data-service";
+import {
+  getViolationHearings,
+  getViolationLinkedFines,
+  getViolationNotices,
+  getViolationStatusHistory
+} from "@/lib/services/violation-workflow-service";
 import { getViolationDetail } from "@/lib/services/dashboard-service";
-import { addViolationComment, updateViolation, updateViolationStatus, uploadViolationPhoto } from "../../actions";
-
-const statusOptions = ["open", "under_review", "warning_sent", "fine_pending", "resolved", "closed"].map((value) => ({
-  value,
-  label: formatLabel(value)
-}));
+import { violationStatusOptions } from "@/lib/violation-workflow";
+import {
+  addViolationComment,
+  createViolationHearing,
+  createViolationNotice,
+  updateViolation,
+  updateViolationStatus,
+  uploadViolationPhoto
+} from "../../actions";
 
 export default async function ViolationDetailPage({
   params,
@@ -28,20 +38,29 @@ export default async function ViolationDetailPage({
   const violation = await getViolationDetail(id);
   if (!violation) notFound();
 
-  const [properties, residents, categories] = await Promise.all([getProperties(), getResidents(), getCategories()]);
+  const [properties, residents, categories, notices, hearings, statusHistory, fines] = await Promise.all([
+    getProperties(),
+    getResidents(),
+    getCategories(),
+    getViolationNotices(id),
+    getViolationHearings(id),
+    getViolationStatusHistory(id),
+    getViolationLinkedFines(id)
+  ]);
+
   const propertyLabel = violation.properties?.address ?? "Unknown property";
   const residentLabel = violation.residents
     ? `${violation.residents.first_name} ${violation.residents.last_name}`
     : "Unassigned";
 
   const timeline = [
-    {
-      id: "created",
-      title: "Violation recorded",
-      description: violation.description,
-      timestamp: formatDateTime(violation.created_at),
-      actor: violation.created_by ? "Staff member" : undefined
-    },
+    ...statusHistory.map((entry) => ({
+      id: entry.id,
+      title: `Status: ${formatLabel(entry.to_status)}`,
+      description: entry.from_status ? `From ${formatLabel(entry.from_status)}` : undefined,
+      timestamp: formatDateTime(entry.created_at),
+      actor: entry.actor_name
+    })),
     ...violation.violation_comments.map((comment) => ({
       id: comment.id,
       title: "Comment added",
@@ -97,12 +116,6 @@ export default async function ViolationDetailPage({
                     <p className="text-xs uppercase text-muted-foreground">Description</p>
                     <p className="text-sm">{violation.description}</p>
                   </div>
-                  {violation.resolved_at ? (
-                    <div>
-                      <p className="text-xs uppercase text-muted-foreground">Resolved</p>
-                      <p className="text-sm font-medium">{formatDateTime(violation.resolved_at)}</p>
-                    </div>
-                  ) : null}
                 </CardContent>
               </Card>
             )
@@ -123,10 +136,164 @@ export default async function ViolationDetailPage({
                     type: "select",
                     required: true,
                     defaultValue: violation.status,
-                    selectOptions: statusOptions
+                    selectOptions: violationStatusOptions()
                   }
                 ]}
               />
+            )
+          },
+          {
+            id: "notices",
+            label: "Notices",
+            content: (
+              <div className="space-y-4">
+                <RecordForm
+                  title="Record notice"
+                  submitLabel="Save notice"
+                  action={createViolationNotice}
+                  fields={[
+                    { name: "violation_id", label: "Violation", type: "hidden", defaultValue: id },
+                    {
+                      name: "notice_type",
+                      label: "Type",
+                      type: "select",
+                      defaultValue: "warning",
+                      selectOptions: [
+                        { value: "warning", label: "Warning" },
+                        { value: "final", label: "Final notice" },
+                        { value: "cure", label: "Cure notice" }
+                      ]
+                    },
+                    {
+                      name: "delivery_method",
+                      label: "Delivery",
+                      type: "select",
+                      defaultValue: "mail",
+                      selectOptions: [
+                        { value: "mail", label: "Mail" },
+                        { value: "email", label: "Email" },
+                        { value: "posted", label: "Posted on property" }
+                      ]
+                    },
+                    {
+                      name: "delivery_status",
+                      label: "Status",
+                      type: "select",
+                      defaultValue: "sent",
+                      selectOptions: [
+                        { value: "draft", label: "Draft" },
+                        { value: "sent", label: "Sent" },
+                        { value: "delivered", label: "Delivered" },
+                        { value: "acknowledged", label: "Acknowledged" }
+                      ]
+                    },
+                    { name: "subject", label: "Subject", required: true, defaultValue: "HOA violation notice" },
+                    { name: "body", label: "Body", type: "textarea", required: true, defaultValue: violation.description }
+                  ]}
+                />
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Notice history</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {notices.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No notices recorded.</p>
+                    ) : (
+                      notices.map((notice) => (
+                        <div key={notice.id} className="rounded-md border p-3">
+                          <p className="text-sm font-medium">{notice.subject}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatLabel(notice.delivery_status)} · {formatLabel(notice.delivery_method)} · {formatDateTime(notice.created_at)}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )
+          },
+          {
+            id: "hearings",
+            label: "Hearings",
+            content: (
+              <div className="space-y-4">
+                <RecordForm
+                  title="Schedule hearing"
+                  submitLabel="Save hearing"
+                  action={createViolationHearing}
+                  fields={[
+                    { name: "violation_id", label: "Violation", type: "hidden", defaultValue: id },
+                    { name: "scheduled_at", label: "Date & time", type: "datetime-local", required: true },
+                    { name: "location", label: "Location", placeholder: "Community clubhouse" },
+                    {
+                      name: "status",
+                      label: "Status",
+                      type: "select",
+                      defaultValue: "scheduled",
+                      selectOptions: [
+                        { value: "scheduled", label: "Scheduled" },
+                        { value: "completed", label: "Completed" },
+                        { value: "continued", label: "Continued" },
+                        { value: "canceled", label: "Canceled" }
+                      ]
+                    },
+                    { name: "outcome_notes", label: "Outcome notes", type: "textarea" }
+                  ]}
+                />
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Hearing schedule</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {hearings.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No hearings scheduled.</p>
+                    ) : (
+                      hearings.map((hearing) => (
+                        <div key={hearing.id} className="rounded-md border p-3">
+                          <p className="text-sm font-medium">{formatDateTime(hearing.scheduled_at)}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatLabel(hearing.status)} · {hearing.location ?? "Location TBD"}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )
+          },
+          {
+            id: "fines",
+            label: "Fines",
+            content: (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Linked fines</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {fines.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      No fines linked.{" "}
+                      <Link href="/dashboard/fines" className="text-primary hover:underline">
+                        Create a fine
+                      </Link>
+                    </p>
+                  ) : (
+                    fines.map((fine) => (
+                      <div key={fine.id} className="flex items-center justify-between rounded-md border p-3">
+                        <div>
+                          <p className="text-sm font-medium">{formatCents(fine.amount_cents)} · {formatLabel(fine.status)}</p>
+                          <p className="text-xs text-muted-foreground">{fine.description}</p>
+                        </div>
+                        <Button variant="outline" size="sm" asChild>
+                          <Link href={`/dashboard/fines/${fine.id}`}>View</Link>
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
             )
           },
           {

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { hasSupabasePublicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { ORG_COOKIE_NAME } from "@/lib/org-cookie";
 import type { AppRole } from "@/lib/permissions";
@@ -24,6 +25,8 @@ export type OrganizationContext = {
 };
 
 export async function getCurrentMemberships() {
+  if (!hasSupabasePublicEnv()) return [];
+
   const supabase = await createClient();
   const {
     data: { user }
@@ -60,6 +63,8 @@ export async function getDefaultOrganizationId() {
 }
 
 export async function getOrganizationContext(): Promise<OrganizationContext | null> {
+  if (!hasSupabasePublicEnv()) return null;
+
   const supabase = await createClient();
   const {
     data: { user }

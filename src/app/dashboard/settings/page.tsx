@@ -6,7 +6,7 @@ import { APP_ROLES, ROLE_LABELS } from "@/lib/permissions";
 import { getMemberRows } from "@/lib/services/dashboard-service";
 import { getUserNotifications } from "@/lib/services/notification-service";
 import { getOrganizationContext } from "@/lib/services/organization-service";
-import { inviteMember, markAllNotificationsRead, markNotificationRead, updateNotificationPrefs, updateOrganization } from "../actions";
+import { inviteMember, markAllNotificationsRead, markNotificationRead, updateNotificationPrefs, updateOrganization, createCategory } from "../actions";
 
 export default async function SettingsPage({
   searchParams
@@ -65,6 +65,26 @@ export default async function SettingsPage({
                   type: "select",
                   defaultValue: "read_only",
                   selectOptions: APP_ROLES.map((role) => ({ value: role, label: ROLE_LABELS[role] }))
+                }
+              ]}
+            />
+            <RecordForm
+              title="Violation category"
+              submitLabel="Add category"
+              action={createCategory}
+              fields={[
+                { name: "name", label: "Category name", required: true, placeholder: "Landscaping" },
+                {
+                  name: "default_severity",
+                  label: "Default severity",
+                  type: "select",
+                  defaultValue: "medium",
+                  selectOptions: [
+                    { value: "low", label: "Low" },
+                    { value: "medium", label: "Medium" },
+                    { value: "high", label: "High" },
+                    { value: "critical", label: "Critical" }
+                  ]
                 }
               ]}
             />

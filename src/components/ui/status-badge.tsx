@@ -1,7 +1,7 @@
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { VIOLATION_STATUS_LABELS, type ViolationStatus } from "@/lib/violation-workflow";
 import { cn } from "@/lib/utils";
 
-type ViolationStatus = "open" | "under_review" | "warning_sent" | "fine_pending" | "resolved" | "closed";
 type RequestStatus = "submitted" | "under_review" | "board_review" | "approved" | "rejected";
 
 export type StatusKind = "violation" | "request";
@@ -12,10 +12,14 @@ type StatusBadgeProps = {
   className?: string;
 };
 
-const violationVariants: Record<ViolationStatus, BadgeProps["variant"]> = {
+const violationVariants: Partial<Record<ViolationStatus, BadgeProps["variant"]>> = {
+  draft: "secondary",
   open: "warning",
   under_review: "default",
+  notice_sent: "warning",
   warning_sent: "warning",
+  hearing_scheduled: "default",
+  appealed: "destructive",
   fine_pending: "destructive",
   resolved: "success",
   closed: "secondary"
@@ -27,15 +31,6 @@ const requestVariants: Record<RequestStatus, BadgeProps["variant"]> = {
   board_review: "warning",
   approved: "success",
   rejected: "destructive"
-};
-
-const violationLabels: Record<ViolationStatus, string> = {
-  open: "Open",
-  under_review: "Under review",
-  warning_sent: "Warning sent",
-  fine_pending: "Fine pending",
-  resolved: "Resolved",
-  closed: "Closed"
 };
 
 const requestLabels: Record<RequestStatus, string> = {
@@ -51,9 +46,7 @@ function normalizeStatus(status: string) {
 }
 
 function formatFallbackLabel(status: string) {
-  return status
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return status.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 export function StatusBadge({ status, kind = "violation", className }: StatusBadgeProps) {
@@ -65,7 +58,7 @@ export function StatusBadge({ status, kind = "violation", className }: StatusBad
   const label =
     kind === "request"
       ? (requestLabels[normalized as RequestStatus] ?? formatFallbackLabel(status))
-      : (violationLabels[normalized as ViolationStatus] ?? formatFallbackLabel(status));
+      : (VIOLATION_STATUS_LABELS[normalized as ViolationStatus] ?? formatFallbackLabel(status));
 
   return (
     <Badge variant={variant} className={cn(className)}>

@@ -165,6 +165,43 @@ where v.organization_id = '00000000-0000-4000-8000-000000000001'
   )
 limit 1;
 
+insert into public.violation_notices (organization_id, violation_id, notice_type, delivery_method, delivery_status, subject, body, sent_at)
+select
+  '00000000-0000-4000-8000-000000000001',
+  v.id,
+  'warning',
+  'mail',
+  'sent',
+  'Notice of violation — trash bins',
+  'This is a formal notice regarding trash bins visible from the street. Please store bins out of view within 14 days.',
+  now() - interval '3 days'
+from public.violations v
+where v.organization_id = '00000000-0000-4000-8000-000000000001'
+  and v.description = 'Trash bins visible from street on collection day.'
+  and not exists (
+    select 1 from public.violation_notices n
+    where n.organization_id = '00000000-0000-4000-8000-000000000001'
+      and n.subject = 'Notice of violation — trash bins'
+  )
+limit 1;
+
+insert into public.violation_hearings (organization_id, violation_id, scheduled_at, location, status)
+select
+  '00000000-0000-4000-8000-000000000001',
+  v.id,
+  now() + interval '10 days',
+  'Community clubhouse — board room',
+  'scheduled'
+from public.violations v
+where v.organization_id = '00000000-0000-4000-8000-000000000001'
+  and v.description = 'Trash bins visible from street on collection day.'
+  and not exists (
+    select 1 from public.violation_hearings h
+    where h.organization_id = '00000000-0000-4000-8000-000000000001'
+      and h.location = 'Community clubhouse — board room'
+  )
+limit 1;
+
 insert into public.work_orders (organization_id, property_id, title, description, category, priority, status, vendor_id, due_date)
 select
   '00000000-0000-4000-8000-000000000001',

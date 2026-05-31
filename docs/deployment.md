@@ -23,11 +23,13 @@ The GitHub Actions workflow in `.github/workflows/ci.yml` runs the same verifica
 supabase link --project-ref ckussqxgvuclnkrgwzaz
 ```
 
-2. Apply migrations:
+2. Apply migrations (four files in `supabase/migrations/`):
 
 ```bash
 supabase db push
 ```
+
+Migration `20260530000003_violation_workflow.sql` adds violation notices, hearings, and status history.
 
 3. Seed demo operating data when needed:
 

@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { requireOrgContext, requireWritePermission } from "@/lib/auth/context";
 import {
   addViolationCommentSchema,
+  createViolationHearingSchema,
+  createViolationNoticeSchema,
   createViolationSchema,
   deleteViolationSchema,
   updateViolationSchema,
@@ -69,8 +71,8 @@ export async function updateViolationStatus(formData: FormData) {
     .select("id")
     .single();
   await finishMutation(ctx, {
-    returnTo,
-    paths,
+    returnTo: `/dashboard/violations/${id}`,
+    paths: [...paths, `/dashboard/violations/${id}`],
     successMessage: "Violation status updated.",
     action: "violation.status_updated",
     targetTable: "violations",
@@ -133,6 +135,81 @@ export async function uploadViolationPhoto(formData: FormData) {
     successMessage: "Violation evidence uploaded.",
     action: "violation_photo.uploaded",
     targetTable: "violation_photos",
+    result
+  });
+}
+
+export async function createViolationNotice(formData: FormData) {
+  const ctx = await requireOrgContext(returnTo);
+  requireWritePermission(ctx, returnTo);
+  const payload = parseForm(createViolationNoticeSchema, formData);
+  const sent_at = payload.delivery_status === "sent" ? new Date().toISOString() : null;
+  const result = await ctx.supabase
+    .from("violation_notices")
+    .insert({
+      organization_id: ctx.organizationId,
+      violation_id: payload.violation_id,
+      notice_type: payload.notice_type,
+      delivery_method: payload.delivery_method,
+      delivery_status: payload.delivery_status,
+      subject: payload.subject,
+      body: payload.body,
+      sent_at,
+      created_by: ctx.userId
+    })
+    .select("id")
+    .single();
+
+  if (payload.delivery_status === "sent" && !result.error) {
+    await ctx.supabase
+      .from("violations")
+      .update({ status: "notice_sent" })
+      .eq("id", payload.violation_id)
+      .eq("organization_id", ctx.organizationId);
+  }
+
+  await finishMutation(ctx, {
+    returnTo: `/dashboard/violations/${payload.violation_id}`,
+    paths: [...paths, `/dashboard/violations/${payload.violation_id}`],
+    successMessage: "Notice recorded.",
+    action: "violation_notice.created",
+    targetTable: "violation_notices",
+    result
+  });
+}
+
+export async function createViolationHearing(formData: FormData) {
+  const ctx = await requireOrgContext(returnTo);
+  requireWritePermission(ctx, returnTo);
+  const payload = parseForm(createViolationHearingSchema, formData);
+  const result = await ctx.supabase
+    .from("violation_hearings")
+    .insert({
+      organization_id: ctx.organizationId,
+      violation_id: payload.violation_id,
+      scheduled_at: payload.scheduled_at,
+      location: payload.location,
+      status: payload.status,
+      outcome_notes: payload.outcome_notes,
+      created_by: ctx.userId
+    })
+    .select("id")
+    .single();
+
+  if (payload.status === "scheduled" && !result.error) {
+    await ctx.supabase
+      .from("violations")
+      .update({ status: "hearing_scheduled" })
+      .eq("id", payload.violation_id)
+      .eq("organization_id", ctx.organizationId);
+  }
+
+  await finishMutation(ctx, {
+    returnTo: `/dashboard/violations/${payload.violation_id}`,
+    paths: [...paths, `/dashboard/violations/${payload.violation_id}`],
+    successMessage: "Hearing scheduled.",
+    action: "violation_hearing.created",
+    targetTable: "violation_hearings",
     result
   });
 }
