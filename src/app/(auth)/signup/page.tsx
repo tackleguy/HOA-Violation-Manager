@@ -77,7 +77,18 @@ export default async function SignupPage({
                 Create workspace
               </Button>
             </form>
-            <div className="flex items-center justify-between border-t pt-5 text-sm text-muted-foreground">
+            <div className="border-t pt-5 text-center text-xs text-muted-foreground">
+              By creating a workspace, you agree to our{" "}
+              <Link href="/terms" className="text-foreground hover:underline">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link href="/privacy" className="text-foreground hover:underline">
+                Privacy Policy
+              </Link>
+              .
+            </div>
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>Already have access?</span>
               <Link href="/login" className="inline-flex items-center gap-1 hover:text-foreground">
                 <UserPlus className="h-4 w-4" />

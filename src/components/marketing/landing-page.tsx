@@ -126,9 +126,15 @@ export function LandingPage() {
             <Link href="/help" className="hover:text-foreground">
               Help center
             </Link>
-            <span>Privacy</span>
-            <span>Terms</span>
-            <span>hello@hoaflow.com</span>
+            <Link href="/privacy" className="hover:text-foreground">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-foreground">
+              Terms
+            </Link>
+            <a href="mailto:hello@hoaflow.com" className="hover:text-foreground">
+              hello@hoaflow.com
+            </a>
           </div>
         </div>
       </footer>
