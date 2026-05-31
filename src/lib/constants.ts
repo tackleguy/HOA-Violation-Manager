@@ -45,6 +45,29 @@ export const navigation = [
   { name: "Settings", href: "/dashboard/settings", icon: Settings }
 ];
 
+export const navigationGroups = [
+  {
+    label: "Overview",
+    items: ["Overview", "Search", "Calendar", "Activity"]
+  },
+  {
+    label: "Community",
+    items: ["Residents", "Properties", "Violations", "Fines"]
+  },
+  {
+    label: "Operations",
+    items: ["Board Meetings", "Work Orders", "Vendors", "Inspections"]
+  },
+  {
+    label: "Records",
+    items: ["Architecture", "Documents", "Communications", "Reports"]
+  },
+  {
+    label: "Admin",
+    items: ["Settings"]
+  }
+] as const;
+
 export const portalNavigation = [
   { name: "Portal home", href: "/portal", icon: Home },
   { name: "Violations", href: "/portal/violations", icon: ShieldCheck },

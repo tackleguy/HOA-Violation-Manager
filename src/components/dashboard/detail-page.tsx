@@ -50,23 +50,24 @@ export function DetailPage({
   const initialTab = defaultTab ?? tabs[0]?.id;
 
   return (
-    <div className={cn("space-y-6", className)}>
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-3">
+    <div className={cn("page-stack", className)}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 space-y-2">
+          <p className="text-label">Record detail</p>
+          <div className="flex flex-wrap items-center gap-2.5">
             {Icon ? <Icon className="h-5 w-5 text-muted-foreground" aria-hidden /> : null}
-            <h1 className="text-3xl font-semibold tracking-normal">{title}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
             {status ? <StatusBadge status={status} kind={statusKind} /> : null}
           </div>
-          {subtitle ? <p className="max-w-2xl text-muted-foreground">{subtitle}</p> : null}
+          {subtitle ? <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p> : null}
         </div>
         {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
 
-      <div className={cn("grid gap-6", sidebar ? "lg:grid-cols-[1fr_280px]" : "")}>
-        <div className="space-y-6">
+      <div className={cn("grid gap-5", sidebar ? "xl:grid-cols-[minmax(0,1fr)_300px]" : "")}>
+        <div className="space-y-5">
           <Tabs defaultValue={initialTab}>
-            <TabsList>
+            <TabsList className="w-full justify-start overflow-x-auto">
               {tabs.map((tab) => (
                 <TabsTrigger key={tab.id} value={tab.id}>
                   {tab.label}
@@ -90,14 +91,14 @@ export function DetailPage({
                 <ol className="space-y-4">
                   {timeline.map((entry, index) => (
                     <li key={entry.id} className="relative pl-6">
-                      <span className="absolute left-0 top-2 h-2 w-2 rounded-full bg-primary" aria-hidden />
+                      <span className="absolute left-0 top-2 h-2 w-2 rounded-full bg-foreground" aria-hidden />
                       {index < timeline.length - 1 ? (
                         <span className="absolute bottom-[-1rem] left-[3px] top-4 w-px bg-border" aria-hidden />
                       ) : null}
                       <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="text-sm font-medium">{entry.title}</p>
-                          <span className="text-xs text-muted-foreground">{entry.timestamp}</span>
+                          <span className="text-xs tabular-nums text-muted-foreground">{entry.timestamp}</span>
                         </div>
                         {entry.description ? <p className="text-sm text-muted-foreground">{entry.description}</p> : null}
                         {entry.actor ? <p className="text-xs text-muted-foreground">By {entry.actor}</p> : null}
@@ -110,14 +111,10 @@ export function DetailPage({
           ) : null}
         </div>
 
-        {sidebar ? (
-          <aside className="space-y-4">
-            {sidebar}
-          </aside>
-        ) : null}
+        {sidebar ? <aside className="space-y-4">{sidebar}</aside> : null}
       </div>
 
-      {sidebar ? null : <Separator />}
+      {!sidebar ? <Separator /> : null}
     </div>
   );
 }

@@ -1,18 +1,20 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type MetricCardProps = {
   label: string;
   value: string;
   delta: string;
+  className?: string;
 };
 
-export function MetricCard({ label, value, delta }: MetricCardProps) {
+export function MetricCard({ label, value, delta, className }: MetricCardProps) {
   return (
-    <Card>
-      <CardContent className="pt-5">
-        <div className="text-sm text-muted-foreground">{label}</div>
-        <div className="mt-2 text-3xl font-semibold">{value}</div>
-        <div className="mt-2 text-xs text-primary">{delta}</div>
+    <Card className={cn("transition-shadow hover:shadow-card", className)}>
+      <CardContent className="space-y-3 pt-1">
+        <p className="text-label">{label}</p>
+        <p className="data-value text-3xl">{value}</p>
+        <p className="text-xs text-muted-foreground">{delta}</p>
       </CardContent>
     </Card>
   );

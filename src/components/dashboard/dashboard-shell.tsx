@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signOut } from "@/app/(auth)/auth-actions";
 import { markAllNotificationsRead, markNotificationRead } from "@/app/dashboard/actions";
+import { MobileBrand, MobileNav } from "@/components/dashboard/mobile-nav";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { OrgSwitcher } from "@/components/dashboard/org-switcher";
 import { Sidebar } from "@/components/dashboard/sidebar";
@@ -8,6 +9,7 @@ import { UserMenu } from "@/components/dashboard/user-menu";
 import { CommandMenu } from "@/components/command-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { getRoleLabel } from "@/lib/permissions";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getNotificationRows, getUnreadNotificationCount } from "@/lib/services/notification-service";
@@ -53,40 +55,47 @@ export async function DashboardShell({ children }: { children: React.ReactNode }
   const roleLabel = orgContext ? getRoleLabel(orgContext.role) : "Preview mode";
 
   return (
-    <div className="grid min-h-screen bg-muted/30 lg:grid-cols-[260px_1fr]">
+    <div className="grid min-h-screen bg-background lg:grid-cols-[var(--sidebar-width)_1fr]">
       <Sidebar />
-      <div>
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/70 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            {organizations.length > 1 ? (
-              <OrgSwitcher
-                organizations={organizations}
-                currentOrganizationId={orgContext?.organizationId ?? organizations[0]?.id ?? ""}
-                switchOrganizationAction={switchOrganization}
+      <div className="flex min-h-screen min-w-0 flex-col">
+        <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+          <div className="flex h-14 items-center gap-3 px-4 sm:px-5 lg:px-6">
+            <MobileNav />
+            <MobileBrand />
+            <Separator orientation="vertical" className="hidden h-5 lg:block" />
+            <div className="hidden min-w-0 flex-1 lg:block">
+              {organizations.length > 1 ? (
+                <OrgSwitcher
+                  organizations={organizations}
+                  currentOrganizationId={orgContext?.organizationId ?? organizations[0]?.id ?? ""}
+                  switchOrganizationAction={switchOrganization}
+                />
+              ) : (
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium tracking-tight">{orgName}</div>
+                  <div className="text-2xs text-muted-foreground">{roleLabel}</div>
+                </div>
+              )}
+            </div>
+            <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+              <CommandMenu />
+              <NotificationBell
+                notifications={notifications}
+                unreadCount={unreadCount}
+                markReadAction={markNotificationRead}
+                markAllReadAction={markAllNotificationsRead}
               />
-            ) : (
-              <div className="min-w-0">
-                <div className="truncate text-sm font-medium">{orgName}</div>
-                <div className="text-xs text-muted-foreground">{roleLabel}</div>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <CommandMenu />
-            <NotificationBell
-              notifications={notifications}
-              unreadCount={unreadCount}
-              markReadAction={markNotificationRead}
-              markAllReadAction={markAllNotificationsRead}
-            />
-            <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex">
-              <Link href="/dashboard/settings">Invite</Link>
-            </Button>
-            <ThemeToggle />
-            <UserMenu user={profile} signOutAction={signOut} />
+              <Button variant="outline" size="sm" asChild className="hidden h-8 sm:inline-flex">
+                <Link href="/dashboard/settings">Invite</Link>
+              </Button>
+              <ThemeToggle />
+              <UserMenu user={profile} signOutAction={signOut} />
+            </div>
           </div>
         </header>
-        <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="flex-1 px-4 py-5 sm:px-5 lg:px-6">
+          <div className="page-container animate-in">{children}</div>
+        </main>
       </div>
     </div>
   );

@@ -23,10 +23,10 @@ const benefits = ["Save time", "Reduce paperwork", "Improve compliance", "Increa
 export function LandingPage() {
   return (
     <main>
-      <section className="min-h-[92vh] overflow-hidden border-b bg-[radial-gradient(circle_at_20%_20%,rgba(13,148,136,0.14),transparent_28%),radial-gradient(circle_at_80%_0%,rgba(245,158,11,0.14),transparent_25%)]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">HF</span>
+      <section className="min-h-[92vh] overflow-hidden border-b bg-background">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" className="focus-ring flex items-center gap-2 rounded-md text-sm font-semibold tracking-tight">
+            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">HF</span>
             HOAFlow
           </Link>
           <div className="flex items-center gap-2">
@@ -38,14 +38,14 @@ export function LandingPage() {
         </div>
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pb-24">
           <div className="animate-fade-up">
-            <Badge variant="warning" className="mb-5">
+            <Badge variant="outline" className="mb-4">
               <Sparkles className="mr-1 h-3.5 w-3.5" />
-              Enterprise HOA operations, without legacy friction
+              Enterprise HOA operations
             </Badge>
-            <h1 className="max-w-4xl text-5xl font-semibold tracking-normal text-balance sm:text-6xl">
+            <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
               HOAFlow
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
               Replace spreadsheets, PDFs, emails, text messages, paper forms, and aging software with one secure operating system for every HOA workflow.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -59,24 +59,24 @@ export function LandingPage() {
               </Button>
             </div>
           </div>
-          <div className="relative min-h-[520px] rounded-lg border bg-card p-4 shadow-soft">
-            <div className="grid h-full gap-4 lg:grid-cols-[220px_1fr]">
-              <div className="rounded-md bg-secondary p-4 text-secondary-foreground">
-                <div className="mb-8 h-8 w-28 rounded bg-white/20" />
+          <div className="relative min-h-[520px] rounded-xl border bg-card p-3 shadow-soft">
+            <div className="grid h-full gap-3 lg:grid-cols-[220px_1fr]">
+              <div className="rounded-lg bg-[hsl(240_6%_10%)] p-4 text-white">
+                <div className="mb-8 h-7 w-24 rounded bg-white/15" />
                 {["Overview", "Residents", "Violations", "Inspections", "Documents"].map((item) => (
-                  <div key={item} className="mb-2 rounded-md bg-white/10 px-3 py-2 text-sm">{item}</div>
+                  <div key={item} className="mb-1.5 rounded-md px-3 py-2 text-sm text-white/80">{item}</div>
                 ))}
               </div>
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-2">
                   {["428", "37", "92%"].map((value, index) => (
-                    <div key={value} className="rounded-md border bg-background p-4">
-                      <div className="text-2xl font-semibold">{value}</div>
+                    <div key={value} className="rounded-lg border bg-background p-3">
+                      <div className="data-value text-xl">{value}</div>
                       <div className="mt-1 text-xs text-muted-foreground">{["Properties", "Active violations", "Resolution rate"][index]}</div>
                     </div>
                   ))}
                 </div>
-                <div className="rounded-md border bg-background p-5">
+                <div className="rounded-lg border bg-background p-4">
                   <div className="mb-4 flex items-center justify-between">
                     <div className="font-medium">Violation workflow</div>
                     <Badge variant="success">Live</Badge>
@@ -202,7 +202,7 @@ export function LandingPage() {
         ))}
       </section>
 
-      <footer className="border-t bg-secondary text-secondary-foreground">
+      <footer className="border-t bg-[hsl(240_6%_10%)] text-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
           <div>© 2026 HOAFlow. All rights reserved.</div>
           <div className="flex gap-5 text-secondary-foreground/80">

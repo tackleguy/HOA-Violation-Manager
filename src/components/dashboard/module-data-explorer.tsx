@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export type ModuleRow = Record<string, string | number> & {
   _id?: string;
@@ -23,7 +24,11 @@ type ModuleDataExplorerProps = {
   rows: ModuleRow[];
 };
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
+
+function formatColumnLabel(column: string) {
+  return column.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
 
 export function ModuleDataExplorer({
   title,
@@ -83,23 +88,28 @@ export function ModuleDataExplorer({
     setPage(1);
   }
 
+  if (rows.length === 0) {
+    return <EmptyState icon={Search} title={emptyTitle} description={emptyDescription} action={emptyAction} />;
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <Card>
-        <CardContent className="grid gap-3 pt-5 md:grid-cols-[minmax(220px,1fr)_180px_180px_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <CardContent className="grid gap-2 pt-1 sm:grid-cols-2 lg:grid-cols-[minmax(220px,1fr)_160px_160px_auto]">
+          <div className="relative sm:col-span-2 lg:col-span-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input
               className="pl-9"
-              placeholder={`Search ${title.toLowerCase()}`}
+              placeholder={`Search ${title.toLowerCase()}…`}
               value={query}
               onChange={(event) => updateQuery(event.target.value)}
+              aria-label={`Search ${title}`}
             />
           </div>
-          <label className="flex h-10 items-center gap-2 rounded-md border bg-background px-3 text-sm">
-            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+          <label className="flex h-9 items-center gap-2 rounded-md border border-border/80 bg-background px-3 text-sm shadow-subtle">
+            <SlidersHorizontal className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
             <select
-              className="min-w-0 flex-1 bg-transparent outline-none"
+              className="min-w-0 flex-1 bg-transparent text-sm outline-none"
               value={statusFilter}
               onChange={(event) => updateFilter(event.target.value)}
               aria-label={`Filter ${title}`}
@@ -111,17 +121,17 @@ export function ModuleDataExplorer({
               ))}
             </select>
           </label>
-          <label className="flex h-10 items-center gap-2 rounded-md border bg-background px-3 text-sm">
-            <span className="text-muted-foreground">Sort</span>
+          <label className="flex h-9 items-center gap-2 rounded-md border border-border/80 bg-background px-3 text-sm shadow-subtle">
+            <span className="shrink-0 text-muted-foreground">Sort</span>
             <select
-              className="min-w-0 flex-1 bg-transparent outline-none"
+              className="min-w-0 flex-1 bg-transparent text-sm outline-none"
               value={sortColumn}
               onChange={(event) => setSortColumn(event.target.value)}
               aria-label={`Sort ${title}`}
             >
               {columns.map((column) => (
                 <option key={column} value={column}>
-                  {column}
+                  {formatColumnLabel(column)}
                 </option>
               ))}
             </select>
@@ -129,6 +139,7 @@ export function ModuleDataExplorer({
           <Button
             type="button"
             variant="outline"
+            size="icon"
             aria-label={`Sort ${sortDirection === "asc" ? "descending" : "ascending"}`}
             onClick={() => setSortDirection((direction) => (direction === "asc" ? "desc" : "asc"))}
           >
@@ -137,75 +148,80 @@ export function ModuleDataExplorer({
         </CardContent>
       </Card>
 
-      {rows.length === 0 ? (
-        <EmptyState icon={Search} title={emptyTitle} description={emptyDescription} action={emptyAction} />
-      ) : (
-        <Card>
-          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle>{title} records</CardTitle>
-            <Badge variant="outline">
-              {filteredRows.length} of {rows.length}
-            </Badge>
-          </CardHeader>
-          <CardContent>
-            {pageRows.length ? (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[720px] text-left text-sm">
-                  <thead className="text-xs uppercase text-muted-foreground">
-                    <tr>
-                      {columns.map((column) => (
-                        <th key={column} className="border-b py-3 pr-4 font-medium">
-                          {column}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pageRows.map((row, index) => (
-                      <tr key={`${safePage}-${index}-${columns.map((column) => row[column]).join("-")}`} className="border-b last:border-0">
-                        {columns.map((column, cellIndex) => {
-                          const value = row[column];
-                          const href = row._href;
-                          return (
-                            <td key={column} className="py-3 pr-4 align-middle">
-                              {cellIndex === 0 && href ? (
-                                <Link href={String(href)} className="font-medium hover:underline">
-                                  {value}
-                                </Link>
-                              ) : cellIndex === columns.length - 1 ? (
-                                <Badge variant="outline">{value}</Badge>
-                              ) : (
-                                value
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
+      <Card className="overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 border-b bg-muted/20 py-3">
+          <CardTitle>{title}</CardTitle>
+          <Badge variant="outline" className="font-normal tabular-nums">
+            {filteredRows.length} of {rows.length}
+          </Badge>
+        </CardHeader>
+        <CardContent className="p-0">
+          {pageRows.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead className="sticky top-0 z-10 bg-card text-xs text-muted-foreground">
+                  <tr className="border-b">
+                    {columns.map((column) => (
+                      <th key={column} scope="col" className="px-4 py-2.5 font-medium">
+                        {formatColumnLabel(column)}
+                      </th>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <EmptyState icon={Search} title="No matching records" description="Adjust the search or filter to broaden this view." />
-            )}
-            <div className="mt-4 flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-muted-foreground">
-                Page {safePage} of {pageCount}
-              </p>
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" disabled={safePage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
-                  <ChevronLeft className="h-4 w-4" />
-                  Previous
-                </Button>
-                <Button type="button" variant="outline" disabled={safePage === pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>
-                  Next
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pageRows.map((row, index) => (
+                    <tr
+                      key={`${safePage}-${index}-${columns.map((column) => row[column]).join("-")}`}
+                      className="interactive-row border-b last:border-0"
+                    >
+                      {columns.map((column, cellIndex) => {
+                        const value = row[column];
+                        const href = row._href;
+                        const isStatusColumn = cellIndex === columns.length - 1;
+
+                        return (
+                          <td key={column} className="px-4 py-3 align-middle">
+                            {cellIndex === 0 && href ? (
+                              <Link href={String(href)} className="font-medium text-foreground hover:underline">
+                                {value}
+                              </Link>
+                            ) : isStatusColumn ? (
+                              <Badge variant="outline" className="font-normal">
+                                {value}
+                              </Badge>
+                            ) : (
+                              <span className={cn(isStatusColumn ? "" : "text-foreground/90")}>{value}</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="p-6">
+              <EmptyState icon={Search} title="No matching records" description="Try adjusting your search or filter criteria." />
+            </div>
+          )}
+          <div className="flex flex-col gap-3 border-t bg-muted/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted-foreground tabular-nums">
+              Page {safePage} of {pageCount}
+            </p>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" size="sm" disabled={safePage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <Button type="button" variant="outline" size="sm" disabled={safePage === pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

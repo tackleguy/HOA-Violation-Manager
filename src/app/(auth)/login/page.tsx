@@ -26,17 +26,17 @@ export default async function LoginPage({
 
   return (
     <main className="grid min-h-screen bg-muted/40 lg:grid-cols-[0.95fr_1.05fr]">
-      <section className="hidden border-r bg-secondary p-10 text-secondary-foreground lg:flex lg:flex-col lg:justify-between">
+      <section className="hidden border-r bg-[hsl(240_6%_10%)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
         <Link href="/" className="flex items-center gap-3 font-semibold">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary">HF</span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-[hsl(240_6%_10%)]">HF</span>
           HOAFlow
         </Link>
         <div>
           <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-lg bg-white/10">
             <Building2 className="h-7 w-7" />
           </div>
-          <h1 className="max-w-xl text-4xl font-semibold">Secure community operations for modern HOA teams.</h1>
-          <p className="mt-5 max-w-lg text-secondary-foreground/70">Session handling is backed by Supabase Auth and tenant membership checks in the database.</p>
+          <h1 className="max-w-xl text-3xl font-semibold tracking-tight">Secure community operations for modern HOA teams.</h1>
+          <p className="mt-5 max-w-lg text-white/70">Session handling is backed by Supabase Auth and tenant membership checks in the database.</p>
         </div>
       </section>
       <section className="flex items-center justify-center px-4 py-12">

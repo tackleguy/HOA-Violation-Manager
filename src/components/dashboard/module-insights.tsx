@@ -256,8 +256,8 @@ function DefaultInsights({ rows, panels }: Pick<ModuleInsightsProps, "rows" | "p
 
 function Metric({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-md border bg-muted/30 px-3 py-2">
-      <p className="text-lg font-semibold">{value}</p>
+    <div className="surface-muted px-3 py-2">
+      <p className="data-value text-lg">{value}</p>
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   );

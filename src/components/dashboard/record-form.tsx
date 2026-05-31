@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +13,7 @@ export type RecordField = {
   type?: "text" | "email" | "tel" | "date" | "datetime-local" | "textarea" | "file" | "select" | "hidden";
   required?: boolean;
   selectOptions?: EntitySelectOption[];
+  helperText?: string;
 };
 
 type RecordFormProps = {
@@ -21,13 +22,15 @@ type RecordFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   fields: RecordField[];
   multipart?: boolean;
+  description?: string;
 };
 
-export function RecordForm({ title, submitLabel, action, fields, multipart }: RecordFormProps) {
+export function RecordForm({ title, submitLabel, action, fields, multipart, description }: RecordFormProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
+        {description ? <CardDescription>{description}</CardDescription> : null}
       </CardHeader>
       <CardContent>
         <form action={action} className="space-y-4" encType={multipart ? "multipart/form-data" : undefined}>
@@ -38,7 +41,7 @@ export function RecordForm({ title, submitLabel, action, fields, multipart }: Re
 
             if (field.type === "select") {
               return (
-                <div key={field.name} className="space-y-2">
+                <div key={field.name} className="space-y-1.5">
                   <Label htmlFor={field.name}>{field.label}</Label>
                   <EntitySelect
                     id={field.name}
@@ -48,12 +51,13 @@ export function RecordForm({ title, submitLabel, action, fields, multipart }: Re
                     defaultValue={field.defaultValue}
                     required={field.required}
                   />
+                  {field.helperText ? <p className="text-xs text-muted-foreground">{field.helperText}</p> : null}
                 </div>
               );
             }
 
             return (
-              <div key={field.name} className="space-y-2">
+              <div key={field.name} className="space-y-1.5">
                 <Label htmlFor={field.name}>{field.label}</Label>
                 {field.type === "textarea" ? (
                   <Textarea
@@ -62,6 +66,7 @@ export function RecordForm({ title, submitLabel, action, fields, multipart }: Re
                     placeholder={field.placeholder}
                     defaultValue={field.defaultValue}
                     required={field.required}
+                    className="min-h-[88px]"
                   />
                 ) : (
                   <Input
@@ -73,6 +78,7 @@ export function RecordForm({ title, submitLabel, action, fields, multipart }: Re
                     required={field.required}
                   />
                 )}
+                {field.helperText ? <p className="text-xs text-muted-foreground">{field.helperText}</p> : null}
               </div>
             );
           })}

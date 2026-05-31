@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Activity, Archive, CalendarPlus, ShieldPlus, UserPlus } from "lucide-react";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { TrendChart } from "@/components/dashboard/trend-chart";
-import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDashboardData, getTrendData } from "@/lib/services/dashboard-service";
@@ -18,31 +18,32 @@ export default async function DashboardPage() {
   const [{ metrics, activityFeed }, trendData] = await Promise.all([getDashboardData(), getTrendData()]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <Badge variant="success">Realtime workspace</Badge>
-          <h1 className="mt-3 text-3xl font-semibold tracking-normal">Dashboard overview</h1>
-          <p className="mt-2 text-muted-foreground">A command center for properties, residents, violations, requests, inspections, and board operations.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {quickLinks.map((action, index) => (
-            <Button key={action.name} variant={index === 0 ? "default" : "outline"} size="icon" asChild aria-label={action.name}>
-              <Link href={action.href}>
-                <action.icon className="h-4 w-4" />
-              </Link>
-            </Button>
-          ))}
-        </div>
-      </div>
+    <div className="page-stack">
+      <PageHeader
+        eyebrow="Workspace"
+        title="Dashboard"
+        description="Open violations, hearings, fines, inspections, and recent activity across your community."
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {quickLinks.map((action, index) => (
+              <Button key={action.name} variant={index === 0 ? "default" : "outline"} size="sm" asChild>
+                <Link href={action.href}>
+                  <action.icon className="h-4 w-4" aria-hidden />
+                  <span className="hidden sm:inline">{action.name}</span>
+                </Link>
+              </Button>
+            ))}
+          </div>
+        }
+      />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {metrics.map((metric) => (
           <MetricCard key={metric.label} {...metric} />
         ))}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.5fr_0.8fr]">
+      <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
         <Card>
           <CardHeader>
             <CardTitle>Monthly trends</CardTitle>
@@ -54,15 +55,15 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" />
-              Activity feed
+              <Activity className="h-4 w-4 text-muted-foreground" aria-hidden />
+              Recent activity
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-2">
             {activityFeed.map((item) => (
-              <div key={item.title} className="rounded-md border bg-background p-3">
-                <div className="text-sm font-medium">{item.title}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{item.meta}</div>
+              <div key={item.title} className="surface-muted px-3 py-2.5">
+                <p className="text-sm font-medium">{item.title}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{item.meta}</p>
               </div>
             ))}
           </CardContent>
