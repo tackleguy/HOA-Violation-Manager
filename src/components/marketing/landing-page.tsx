@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowRight, Building2, CheckCircle2, ClipboardCheck, FileText, LockKeyhole, Map, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { ContactForm } from "@/components/marketing/contact-form";
 import { FeatureComparison } from "@/components/marketing/feature-comparison";
-import { PricingTable } from "@/components/marketing/pricing-table";
+import { ParallaxShowcase } from "@/components/marketing/parallax-showcase";
+import { PricingSection } from "@/components/marketing/pricing-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -145,17 +146,21 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mb-10 flex items-end justify-between gap-6">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <ParallaxShowcase className="mb-4" />
+      </section>
+
+      <section id="pricing" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-end justify-between gap-6">
           <div>
-            <h2 className="text-3xl font-semibold">Pricing</h2>
-            <p className="mt-3 text-muted-foreground">Flexible tiers for growing HOA operations.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">Pricing</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Flexible tiers for growing HOA operations.</p>
           </div>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="sm">
             <Link href="/help/billing">Billing FAQ</Link>
           </Button>
         </div>
-        <PricingTable />
+        <PricingSection />
         <div className="mt-16">
           <h3 className="mb-6 text-2xl font-semibold">Compare plans</h3>
           <FeatureComparison />
