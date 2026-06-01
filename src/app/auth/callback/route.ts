@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { ensureUserOrganization } from "@/lib/auth/provision-organization";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -27,6 +28,14 @@ export async function GET(request: NextRequest) {
     redirectUrl.pathname = "/login";
     redirectUrl.search = `?error=${encodeURIComponent(error.message)}`;
     return NextResponse.redirect(redirectUrl);
+  }
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    await ensureUserOrganization(supabase, user.id, user.user_metadata);
   }
 
   redirectUrl.pathname = next;

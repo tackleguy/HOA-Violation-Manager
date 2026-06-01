@@ -1,12 +1,17 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import {
+  ensureUserOrganization,
+  provisionOrganizationForUser,
+  setOrganizationCookie,
+  slugifyOrganizationName
+} from "@/lib/auth/provision-organization";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { hasSupabasePublicEnv } from "@/lib/env";
-import { ORG_COOKIE_NAME } from "@/lib/org-cookie";
-import { cookies } from "next/headers";
+import { env, hasSupabasePublicEnv } from "@/lib/env";
 
 const signupSchema = z.object({
   full_name: z.string().trim().min(1, "Full name is required."),
@@ -15,17 +20,7 @@ const signupSchema = z.object({
   organization_name: z.string().trim().min(2, "Organization name is required.")
 });
 
-function slugifyOrganizationName(name: string) {
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 48);
-
-  return slug || "hoa-workspace";
-}
-
-async function provisionOrganization(userId: string, name: string, slug: string) {
+async function provisionOrganizationWithAdmin(userId: string, name: string, slug: string) {
   const admin = createAdminClient();
 
   const { data: organization, error: organizationError } = await admin
@@ -70,7 +65,12 @@ export async function signUpWithOrganization(formData: FormData) {
     email,
     password,
     options: {
-      data: { full_name }
+      data: {
+        full_name,
+        organization_name,
+        organization_slug: slug
+      },
+      emailRedirectTo: `${env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/dashboard`
     }
   });
 
@@ -85,19 +85,13 @@ export async function signUpWithOrganization(formData: FormData) {
   let organizationId: string | null = null;
 
   if (data.session) {
-    const { data: rpcOrganizationId, error: rpcError } = await supabase.rpc("create_organization", {
-      org_name: organization_name,
-      org_slug: slug
+    organizationId = await provisionOrganizationForUser(supabase, {
+      organization_name,
+      organization_slug: slug
     });
-
-    if (rpcError) {
-      redirect(`/signup?error=${encodeURIComponent(rpcError.message)}`);
-    }
-
-    organizationId = rpcOrganizationId;
-  } else {
+  } else if (env.SUPABASE_SERVICE_ROLE_KEY) {
     try {
-      organizationId = await provisionOrganization(data.user.id, organization_name, slug);
+      organizationId = await provisionOrganizationWithAdmin(data.user.id, organization_name, slug);
     } catch (provisionError) {
       const message = provisionError instanceof Error ? provisionError.message : "Unable to create organization.";
       redirect(`/signup?error=${encodeURIComponent(message)}`);
@@ -105,14 +99,13 @@ export async function signUpWithOrganization(formData: FormData) {
   }
 
   if (organizationId) {
-    const cookieStore = await cookies();
-    cookieStore.set(ORG_COOKIE_NAME, organizationId, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365
-    });
+    await setOrganizationCookie(organizationId);
+    revalidatePath("/", "layout");
+    redirect("/dashboard?message=Welcome to HOAFlow. Your workspace is ready.");
   }
 
-  redirect("/dashboard?message=Welcome to HOAFlow. Your workspace is ready.");
+  redirect(
+    "/login?message=" +
+      encodeURIComponent("Account created. Confirm your email, then sign in to finish workspace setup.")
+  );
 }

@@ -5,6 +5,7 @@ import type { Database } from "@/types/database";
 
 const protectedRoutes = ["/dashboard", "/portal"];
 const authRoutes = ["/login", "/reset-password", "/signup"];
+const onboardingRoute = "/onboarding";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -36,8 +37,9 @@ export async function updateSession(request: NextRequest) {
 
   const isProtected = protectedRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
   const isAuthRoute = authRoutes.some((route) => request.nextUrl.pathname.startsWith(route));
+  const isOnboarding = request.nextUrl.pathname.startsWith(onboardingRoute);
 
-  if (isProtected && !user) {
+  if ((isProtected || isOnboarding) && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", request.nextUrl.pathname);

@@ -5,6 +5,7 @@ import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserMenu } from "@/components/dashboard/user-menu";
 import { CommandMenu } from "@/components/command-menu";
+import { WorkspaceSetupBanner } from "@/components/dashboard/workspace-setup-banner";
 import { getRoleLabel } from "@/lib/permissions";
 import { hasSupabasePublicEnv } from "@/lib/env";
 import { getNotificationRows, getUnreadNotificationCount } from "@/lib/services/notification-service";
@@ -38,8 +39,10 @@ export async function DashboardShell({ children }: { children: React.ReactNode }
     }
   }
 
-  const orgName = orgContext?.organization.name ?? "Demo HOA Workspace";
-  const roleLabel = orgContext ? getRoleLabel(orgContext.role) : "Preview mode";
+  const hasLiveAuth = hasSupabasePublicEnv() && profile.email !== "demo@hoaflow.app";
+  const needsWorkspace = hasLiveAuth && !orgContext;
+  const orgName = orgContext?.organization.name ?? (needsWorkspace ? "No workspace" : "Demo HOA Workspace");
+  const roleLabel = orgContext ? getRoleLabel(orgContext.role) : needsWorkspace ? "Setup required" : "Preview mode";
 
   return (
     <div className="grid min-h-screen bg-background lg:grid-cols-[var(--sidebar-width)_1fr]">
@@ -61,7 +64,10 @@ export async function DashboardShell({ children }: { children: React.ReactNode }
           </div>
         </header>
         <main className="flex-1 px-4 py-8 lg:px-8">
-          <div className="page-container">{children}</div>
+          <div className="page-container">
+            {needsWorkspace ? <WorkspaceSetupBanner /> : null}
+            {children}
+          </div>
         </main>
       </div>
     </div>
