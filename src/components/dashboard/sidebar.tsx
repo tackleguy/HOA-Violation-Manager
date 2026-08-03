@@ -49,7 +49,7 @@ function BrandMark() {
 
 export function Sidebar({ orgName, roleLabel }: SidebarProps) {
   return (
-    <aside className="hidden min-h-screen border-r border-border/80 bg-background lg:block">
+    <aside className="hidden min-h-screen border-r border-border/80 bg-background lg:block" aria-label="Application sidebar">
       <div className="sticky top-0 flex h-screen flex-col px-3 py-5">
         <div className="mb-8 px-2">
           <BrandMark />
@@ -58,7 +58,7 @@ export function Sidebar({ orgName, roleLabel }: SidebarProps) {
           <NavLinks />
         </div>
         {orgName ? (
-          <div className="mt-8 border-t border-border/80 px-2 pt-4">
+          <div className="mt-8 border-t border-border/80 px-2 pt-4" aria-label="Current organization">
             <p className="truncate text-sm font-medium text-foreground">{orgName}</p>
             {roleLabel ? <p className="truncate text-xs text-muted-foreground">{roleLabel}</p> : null}
           </div>

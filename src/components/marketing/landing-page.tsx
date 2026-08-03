@@ -19,125 +19,148 @@ const benefits = ["Save time", "Reduce paperwork", "Improve compliance", "Increa
 
 export function LandingPage() {
   return (
-    <main>
-      <section className="border-b">
+    <>
+      <header className="border-b border-border/80" role="banner">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <Link href="/" className="focus-ring text-sm font-semibold tracking-tight">
             HOAFlow
           </Link>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/login">Sign in</Link>
-          </Button>
-        </div>
-        <div className="mx-auto max-w-5xl px-6 pb-24 pt-16">
-          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
-            HOA operations, without the noise.
-          </h1>
-          <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground">
-            One system for violations, inspections, residents, and documents — built for boards and managers who need clarity, not clutter.
-          </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button asChild>
-              <Link href="/login">
-                Launch dashboard <ArrowRight className="h-4 w-4" />
-              </Link>
+          <nav aria-label="Primary">
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/login">Sign in</Link>
             </Button>
-            <Button asChild variant="outline">
-              <Link href="#pricing">View pricing</Link>
-            </Button>
-          </div>
+          </nav>
         </div>
-      </section>
+      </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <ul className="grid gap-x-12 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((name) => (
-            <li key={name} className="text-sm text-muted-foreground">
-              {name}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="border-y">
-        <div className="mx-auto grid max-w-5xl gap-12 px-6 py-20 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Built for every community size.</h2>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">
-              Small HOAs, master communities, and management companies work from the same source of truth.
+      <main id="main-content" tabIndex={-1} className="outline-none">
+        <section className="border-b border-border/80" aria-labelledby="hero-heading">
+          <div className="mx-auto max-w-5xl px-6 pb-24 pt-16">
+            <h1 id="hero-heading" className="max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
+              HOA operations, without the noise.
+            </h1>
+            <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground">
+              One system for violations, inspections, residents, and documents — built for boards and managers who need
+              clarity, not clutter.
             </p>
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <Button asChild>
+                <Link href="/login">
+                  Launch dashboard <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="#pricing">View pricing</Link>
+              </Button>
+            </div>
           </div>
-          <ul className="space-y-3">
-            {benefits.map((benefit) => (
-              <li key={benefit} className="text-sm text-foreground">
-                {benefit}
+        </section>
+
+        <section className="mx-auto max-w-5xl px-6 py-20" aria-label="Product capabilities">
+          <h2 className="sr-only">Capabilities</h2>
+          <ul className="grid gap-x-12 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((name) => (
+              <li key={name} className="text-sm text-muted-foreground">
+                {name}
               </li>
             ))}
           </ul>
-        </div>
-      </section>
+        </section>
 
-      <section id="pricing" className="mx-auto max-w-5xl px-6 py-20">
-        <PricingSection />
-        <div className="mt-16 border-t border-border/80 pt-12">
-          <h3 className="mb-6 text-sm font-medium">Compare plans</h3>
-          <FeatureComparison />
-        </div>
-      </section>
-
-      <section id="contact" className="border-y">
-        <div className="mx-auto grid max-w-5xl gap-12 px-6 py-20 lg:grid-cols-2">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Talk with our team</h2>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground">
-              Planning a migration from spreadsheets or legacy HOA software? Tell us about your community.
-            </p>
-            <div className="mt-6 flex gap-3">
-              <Button asChild variant="outline" size="sm">
-                <Link href="/help/getting-started">Getting started</Link>
-              </Button>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/help">Help center</Link>
-              </Button>
-            </div>
-          </div>
-          <ContactForm />
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <h2 className="text-2xl font-semibold tracking-tight">FAQ</h2>
-        <div className="mt-8 divide-y divide-border/80">
-          {["Does HOAFlow support multiple HOAs?", "Can inspectors upload photos?", "Is pricing available today?"].map((question) => (
-            <div key={question} className="py-5">
-              <h3 className="text-sm font-medium">{question}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Yes. The platform supports secure multi-tenant operations, mobile workflows, and staged commercial rollout.
+        <section className="border-y border-border/80" aria-labelledby="communities-heading">
+          <div className="mx-auto grid max-w-5xl gap-12 px-6 py-20 lg:grid-cols-2">
+            <div>
+              <h2 id="communities-heading" className="text-2xl font-semibold tracking-tight">
+                Built for every community size.
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                Small HOAs, master communities, and management companies work from the same source of truth.
               </p>
             </div>
-          ))}
-        </div>
-      </section>
+            <ul className="space-y-3">
+              {benefits.map((benefit) => (
+                <li key={benefit} className="text-sm text-foreground">
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
-      <footer className="border-t">
+        <section id="pricing" className="mx-auto max-w-5xl px-6 py-20">
+          <PricingSection />
+          <div className="mt-16 border-t border-border/80 pt-12">
+            <h3 className="mb-6 text-sm font-medium">Compare plans</h3>
+            <FeatureComparison />
+          </div>
+        </section>
+
+        <section id="contact" className="border-y border-border/80" aria-labelledby="contact-heading">
+          <div className="mx-auto grid max-w-5xl gap-12 px-6 py-20 lg:grid-cols-2">
+            <div>
+              <h2 id="contact-heading" className="text-2xl font-semibold tracking-tight">
+                Talk with our team
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                Planning a migration from spreadsheets or legacy HOA software? Tell us about your community.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/help/getting-started">Getting started</Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/help">Help center</Link>
+                </Button>
+              </div>
+            </div>
+            <ContactForm />
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-6 py-20" aria-labelledby="faq-heading">
+          <h2 id="faq-heading" className="text-2xl font-semibold tracking-tight">
+            FAQ
+          </h2>
+          <div className="mt-8 divide-y divide-border/80">
+            {[
+              "Does HOAFlow support multiple HOAs?",
+              "Can inspectors upload photos?",
+              "Is pricing available today?"
+            ].map((question) => (
+              <div key={question} className="py-5">
+                <h3 className="text-sm font-medium">{question}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Yes. The platform supports secure multi-tenant operations, mobile workflows, and staged commercial
+                  rollout.
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-border/80" role="contentinfo">
         <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
           <div>© 2026 HOAFlow</div>
-          <div className="flex flex-wrap gap-5">
-            <Link href="/help" className="hover:text-foreground">
+          <nav aria-label="Footer" className="flex flex-wrap gap-5">
+            <Link href="/help" className="focus-ring rounded-sm hover:text-foreground">
               Help center
             </Link>
-            <Link href="/privacy" className="hover:text-foreground">
+            <Link href="/accessibility" className="focus-ring rounded-sm hover:text-foreground">
+              Accessibility
+            </Link>
+            <Link href="/privacy" className="focus-ring rounded-sm hover:text-foreground">
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-foreground">
+            <Link href="/terms" className="focus-ring rounded-sm hover:text-foreground">
               Terms
             </Link>
-            <a href="mailto:hello@hoaflow.com" className="hover:text-foreground">
+            <a href="mailto:hello@hoaflow.com" className="focus-ring rounded-sm hover:text-foreground">
               hello@hoaflow.com
             </a>
-          </div>
+          </nav>
         </div>
       </footer>
-    </main>
+    </>
   );
 }

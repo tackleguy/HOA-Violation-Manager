@@ -33,7 +33,7 @@ export function Alert({ className, variant = "default", children, ...props }: Al
   return (
     <div role="alert" className={cn(alertVariants({ variant }), className)} {...props}>
       <div className="flex gap-3">
-        <Icon className="mt-0.5 h-4 w-4 shrink-0" />
+        <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
         <div className="min-w-0 flex-1">{children}</div>
       </div>
     </div>

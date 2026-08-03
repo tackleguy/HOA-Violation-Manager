@@ -61,7 +61,12 @@ export function StatusBadge({ status, kind = "violation", className }: StatusBad
       : (VIOLATION_STATUS_LABELS[normalized as ViolationStatus] ?? formatFallbackLabel(status));
 
   return (
-    <Badge variant={variant} className={cn(className)}>
+    <Badge
+      variant={variant}
+      role="status"
+      aria-label={`Status: ${label}`}
+      className={cn("border border-current/20", className)}
+    >
       {label}
     </Badge>
   );

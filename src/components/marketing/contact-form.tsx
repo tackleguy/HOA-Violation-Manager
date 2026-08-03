@@ -22,7 +22,7 @@ export function ContactForm() {
 
   if (submitted) {
     return (
-      <Alert variant="success">
+      <Alert variant="success" role="status" aria-live="polite">
         <AlertTitle>Message sent</AlertTitle>
         <AlertDescription>Thanks for reaching out. Our team will respond within one business day.</AlertDescription>
       </Alert>
@@ -30,15 +30,15 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-md border bg-card p-6">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-md border bg-card p-6" noValidate aria-busy={loading}>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="contact-name">Name</Label>
-          <Input id="contact-name" name="name" required placeholder="Jane Boardmember" />
+          <Input id="contact-name" name="name" required autoComplete="name" placeholder="Jane Boardmember" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="contact-email">Email</Label>
-          <Input id="contact-email" name="email" type="email" required placeholder="jane@community.org" />
+          <Input id="contact-email" name="email" type="email" required autoComplete="email" placeholder="jane@community.org" />
         </div>
       </div>
       <div className="space-y-2">
@@ -49,8 +49,8 @@ export function ContactForm() {
         <Label htmlFor="contact-message">How can we help?</Label>
         <Textarea id="contact-message" name="message" required rows={5} placeholder="Tell us about your community size and current tools." />
       </div>
-      <Button type="submit" disabled={loading}>
-        <Send className="h-4 w-4" />
+      <Button type="submit" disabled={loading} aria-disabled={loading}>
+        <Send className="h-4 w-4" aria-hidden />
         {loading ? "Sending…" : "Send message"}
       </Button>
     </form>

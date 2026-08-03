@@ -48,8 +48,8 @@ export async function DashboardShell({ children }: { children: React.ReactNode }
     <div className="grid min-h-screen bg-background lg:grid-cols-[var(--sidebar-width)_1fr]">
       <Sidebar orgName={orgName} roleLabel={roleLabel} />
       <div className="flex min-h-screen min-w-0 flex-col">
-        <header className="sticky top-0 z-30 border-b border-border/80 bg-background">
-          <div className="flex h-12 items-center gap-3 px-4 lg:px-6">
+        <header className="sticky top-0 z-30 border-b border-border/80 bg-background" role="banner">
+          <div className="flex min-h-14 items-center gap-3 px-4 lg:px-6">
             <MobileNav orgName={orgName} roleLabel={roleLabel} />
             <div className="flex flex-1 items-center justify-end gap-1">
               <CommandMenu />
@@ -63,7 +63,7 @@ export async function DashboardShell({ children }: { children: React.ReactNode }
             </div>
           </div>
         </header>
-        <main className="flex-1 px-4 py-8 lg:px-8">
+        <main id="main-content" tabIndex={-1} className="flex-1 px-4 py-8 outline-none lg:px-8">
           <div className="page-container">
             {needsWorkspace ? <WorkspaceSetupBanner /> : null}
             {children}

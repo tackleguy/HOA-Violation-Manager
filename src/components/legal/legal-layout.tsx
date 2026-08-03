@@ -8,7 +8,7 @@ type LegalLayoutProps = {
 export function LegalLayout({ children }: LegalLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/80">
+      <header className="border-b border-border/80" role="banner">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
           <Link href="/" className="focus-ring text-sm font-semibold tracking-tight">
             HOAFlow
@@ -18,24 +18,29 @@ export function LegalLayout({ children }: LegalLayoutProps) {
           </Button>
         </div>
       </header>
-      <main className="mx-auto max-w-3xl px-6 py-16">{children}</main>
-      <footer className="border-t border-border/80">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-3xl px-6 py-16 outline-none">
+        {children}
+      </main>
+      <footer className="border-t border-border/80" role="contentinfo">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 px-6 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <div>© 2026 HOAFlow</div>
-          <div className="flex flex-wrap gap-5">
-            <Link href="/help" className="hover:text-foreground">
+          <nav aria-label="Footer" className="flex flex-wrap gap-5">
+            <Link href="/help" className="focus-ring rounded-sm hover:text-foreground">
               Help center
             </Link>
-            <Link href="/privacy" className="hover:text-foreground">
+            <Link href="/accessibility" className="focus-ring rounded-sm hover:text-foreground">
+              Accessibility
+            </Link>
+            <Link href="/privacy" className="focus-ring rounded-sm hover:text-foreground">
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-foreground">
+            <Link href="/terms" className="focus-ring rounded-sm hover:text-foreground">
               Terms
             </Link>
-            <a href="mailto:hello@hoaflow.com" className="hover:text-foreground">
+            <a href="mailto:hello@hoaflow.com" className="focus-ring rounded-sm hover:text-foreground">
               hello@hoaflow.com
             </a>
-          </div>
+          </nav>
         </div>
       </footer>
     </div>

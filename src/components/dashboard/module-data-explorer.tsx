@@ -147,6 +147,7 @@ export function ModuleDataExplorer({
       {pageRows.length ? (
         <div className="table-shell">
           <table className="table-minimal">
+            <caption className="sr-only">{title} records</caption>
             <thead>
               <tr>
                 {columns.map((column) => (

@@ -57,10 +57,15 @@ export function NotificationBell({ notifications, unreadCount, markReadAction, m
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" aria-label="Notifications" className="relative">
-          <Bell className="h-4 w-4" />
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+          className="relative"
+        >
+          <Bell className="h-4 w-4" aria-hidden />
           {unreadCount > 0 ? (
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground">
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-primary-foreground" aria-hidden>
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           ) : null}
@@ -71,7 +76,7 @@ export function NotificationBell({ notifications, unreadCount, markReadAction, m
           <span>Notifications</span>
           {unread > 0 ? (
             <Button variant="ghost" size="sm" className="h-7 px-2" disabled={isPending} onClick={handleMarkAllRead}>
-              <CheckCheck className="mr-1 h-3.5 w-3.5" />
+              <CheckCheck className="mr-1 h-3.5 w-3.5" aria-hidden />
               Mark all
             </Button>
           ) : null}
@@ -100,7 +105,12 @@ export function NotificationBell({ notifications, unreadCount, markReadAction, m
                     {notification.body ? <p className="mt-1 text-xs text-muted-foreground">{notification.body}</p> : null}
                     <p className="mt-1 text-xs text-muted-foreground">{notification.time}</p>
                   </div>
-                  {!notification.read ? <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" /> : null}
+                  {!notification.read ? (
+                    <>
+                      <span className="sr-only">Unread</span>
+                      <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" aria-hidden />
+                    </>
+                  ) : null}
                 </div>
               </button>
             ))}

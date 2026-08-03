@@ -12,14 +12,14 @@ export default function HelpPage() {
   return (
     <HelpLayout>
       <HelpSidebar />
-      <div className="min-w-0">
+      <main id="main-content" tabIndex={-1} className="min-w-0 outline-none">
         <div className="mb-8">
-          <h1 className="text-3xl font-semibold tracking-normal">Help center</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Help center</h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Guides for onboarding, violations, inspections, billing, and day-to-day HOA operations in HOAFlow.
           </p>
           <div className="relative mt-6 max-w-xl">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input placeholder="Search help articles…" className="pl-9" readOnly aria-label="Search help articles" />
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function HelpPage() {
         <p className="mt-10 text-sm text-muted-foreground">
           {HELP_ARTICLES.length} articles available · Updated May 2026
         </p>
-      </div>
+      </main>
     </HelpLayout>
   );
 }

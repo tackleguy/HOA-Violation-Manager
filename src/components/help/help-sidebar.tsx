@@ -10,14 +10,15 @@ export function HelpSidebar() {
   const groups = getHelpArticlesByCategory();
 
   return (
-    <aside className="space-y-6">
+    <aside className="space-y-6" aria-label="Help navigation">
       <div>
         <Link
           href="/help"
           className={cn(
-            "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
+            "focus-ring block min-h-11 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
             pathname === "/help" && "bg-muted text-foreground"
           )}
+          aria-current={pathname === "/help" ? "page" : undefined}
         >
           Help center
         </Link>
@@ -25,7 +26,7 @@ export function HelpSidebar() {
       {groups.map(([category, articles]) => (
         <div key={category}>
           <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{category}</p>
-          <nav className="space-y-1">
+          <nav aria-label={category} className="space-y-1">
             {articles.map((article) => {
               const href = `/help/${article.slug}`;
               const active = pathname === href;
@@ -33,9 +34,10 @@ export function HelpSidebar() {
                 <Link
                   key={article.slug}
                   href={href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
-                    "block rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted",
-                    active && "bg-primary/10 font-medium text-primary"
+                    "focus-ring block min-h-11 rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted",
+                    active && "bg-muted font-medium text-foreground"
                   )}
                 >
                   {article.title}

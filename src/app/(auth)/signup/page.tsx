@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Building2, Sparkles, UserPlus } from "lucide-react";
+import { FormStatus } from "@/components/a11y/form-status";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,11 +52,10 @@ export default async function SignupPage({
                 Add Supabase environment variables to enable account creation. The product UI remains available for local preview.
               </p>
             ) : null}
-            {params.error ? <p className="text-sm text-destructive">{params.error}</p> : null}
-            {params.message ? <p className="text-sm text-primary">{params.message}</p> : null}
+            <FormStatus error={params.error} message={params.message} />
           </CardHeader>
           <CardContent className="space-y-6">
-            <form action={signUpWithOrganization} className="space-y-4">
+            <form action={signUpWithOrganization} className="space-y-4" aria-describedby={params.error ? "form-error" : undefined}>
               <div className="space-y-2">
                 <Label htmlFor="full_name">Full name</Label>
                 <Input id="full_name" name="full_name" autoComplete="name" required placeholder="Jordan Lee" />
@@ -66,14 +66,17 @@ export default async function SignupPage({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required />
+                <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required aria-describedby="password-hint" />
+                <p id="password-hint" className="text-xs text-muted-foreground">
+                  At least 8 characters.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="organization_name">HOA / community name</Label>
                 <Input id="organization_name" name="organization_name" required placeholder="Evergreen Ridge HOA" />
               </div>
               <Button type="submit" className="w-full">
-                <Sparkles className="h-4 w-4" />
+                <Sparkles className="h-4 w-4" aria-hidden />
                 Create workspace
               </Button>
             </form>

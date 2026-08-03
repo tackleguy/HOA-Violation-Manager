@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FormStatus } from "@/components/a11y/form-status";
 import { cn } from "@/lib/utils";
 
 type PageHeaderProps = {
@@ -12,14 +13,13 @@ type PageHeaderProps = {
 
 export function PageHeader({ title, description, message, error, actions, className }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between", className)}>
+    <header className={cn("flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between", className)}>
       <div className="min-w-0 space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">{title}</h1>
         {description ? <p className="max-w-xl text-sm text-muted-foreground">{description}</p> : null}
-        {message ? <p className="text-sm text-foreground">{message}</p> : null}
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        <FormStatus error={error} message={message} />
       </div>
-      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
-    </div>
+      {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
+    </header>
   );
 }

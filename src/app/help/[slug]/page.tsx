@@ -27,7 +27,9 @@ export default async function HelpArticlePage({ params }: { params: Promise<{ sl
   return (
     <HelpLayout>
       <HelpSidebar />
-      <HelpArticleView article={article} />
+      <main id="main-content" tabIndex={-1} className="outline-none">
+        <HelpArticleView article={article} />
+      </main>
     </HelpLayout>
   );
 }
