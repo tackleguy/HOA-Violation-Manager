@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Building2, KeyRound, Mail } from "lucide-react";
 import { FormStatus } from "@/components/a11y/form-status";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { hasSupabasePublicEnv } from "@/lib/env";
@@ -27,11 +27,13 @@ export default async function LoginPage({
 
   return (
     <main id="main-content" tabIndex={-1} className="grid min-h-screen bg-muted/40 outline-none lg:grid-cols-[0.95fr_1.05fr]">
-      <section className="hidden border-r bg-[hsl(240_6%_10%)] p-10 text-white lg:flex lg:flex-col lg:justify-between" aria-hidden="true">
-        <Link href="/" className="flex items-center gap-3 font-semibold">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-[hsl(240_6%_10%)]">HF</span>
+      <section className="hidden border-r bg-[hsl(240_6%_10%)] p-10 text-white lg:flex lg:flex-col lg:justify-between" aria-label="Product overview">
+        <div className="flex items-center gap-3 font-semibold">
+          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-[hsl(240_6%_10%)]" aria-hidden>
+            HF
+          </span>
           HOAFlow
-        </Link>
+        </div>
         <div>
           <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-lg bg-white/10">
             <Building2 className="h-7 w-7" aria-hidden />
@@ -43,7 +45,9 @@ export default async function LoginPage({
       <section className="flex items-center justify-center px-4 py-12" aria-labelledby="login-heading">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle id="login-heading">Sign in to HOAFlow</CardTitle>
+            <h1 id="login-heading" className="text-lg font-semibold tracking-tight">
+              Sign in to HOAFlow
+            </h1>
             {!hasSupabaseConfig ? (
               <p className="text-sm text-muted-foreground">
                 Add Supabase environment variables to enable authentication. The product UI remains available for local preview.
@@ -84,14 +88,14 @@ export default async function LoginPage({
                 </Button>
               </div>
             </form>
-            <nav aria-label="Account links" className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-              <Link href="/reset-password" className="focus-ring rounded-sm hover:text-foreground">
+            <nav aria-label="Account links" className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+              <Link href="/reset-password" className="link-quiet">
                 Reset password
               </Link>
-              <Link href="/invite" className="focus-ring rounded-sm hover:text-foreground">
+              <Link href="/invite" className="link-quiet">
                 Accept invite
               </Link>
-              <Link href="/signup" className="focus-ring rounded-sm hover:text-foreground">
+              <Link href="/signup" className="link-quiet">
                 Create workspace
               </Link>
             </nav>

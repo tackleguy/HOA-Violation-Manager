@@ -22,7 +22,7 @@ export function LandingPage() {
     <>
       <header className="border-b border-border/80" role="banner">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link href="/" className="focus-ring text-sm font-semibold tracking-tight">
+          <Link href="/" className="focus-ring inline-flex min-h-11 items-center text-sm font-semibold tracking-tight text-foreground">
             HOAFlow
           </Link>
           <nav aria-label="Primary">
@@ -142,20 +142,20 @@ export function LandingPage() {
       <footer className="border-t border-border/80" role="contentinfo">
         <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
           <div>© 2026 HOAFlow</div>
-          <nav aria-label="Footer" className="flex flex-wrap gap-5">
-            <Link href="/help" className="focus-ring rounded-sm hover:text-foreground">
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link href="/help" className="link-quiet text-muted-foreground hover:text-foreground">
               Help center
             </Link>
-            <Link href="/accessibility" className="focus-ring rounded-sm hover:text-foreground">
+            <Link href="/accessibility" className="link-quiet text-muted-foreground hover:text-foreground">
               Accessibility
             </Link>
-            <Link href="/privacy" className="focus-ring rounded-sm hover:text-foreground">
+            <Link href="/privacy" className="link-quiet text-muted-foreground hover:text-foreground">
               Privacy
             </Link>
-            <Link href="/terms" className="focus-ring rounded-sm hover:text-foreground">
+            <Link href="/terms" className="link-quiet text-muted-foreground hover:text-foreground">
               Terms
             </Link>
-            <a href="mailto:hello@hoaflow.com" className="focus-ring rounded-sm hover:text-foreground">
+            <a href="mailto:hello@hoaflow.com" className="link-quiet text-muted-foreground hover:text-foreground">
               hello@hoaflow.com
             </a>
           </nav>

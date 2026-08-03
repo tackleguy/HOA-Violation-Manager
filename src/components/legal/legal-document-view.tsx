@@ -19,7 +19,7 @@ export function LegalDocumentView({ document }: LegalDocumentViewProps) {
         <ol className="mt-3 space-y-2">
           {document.sections.map((section) => (
             <li key={section.id}>
-              <a href={`#${section.id}`} className="text-sm text-muted-foreground hover:text-foreground">
+              <a href={`#${section.id}`} className="link-quiet text-sm text-muted-foreground hover:text-foreground">
                 {section.title}
               </a>
             </li>

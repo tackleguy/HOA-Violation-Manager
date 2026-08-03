@@ -11,7 +11,8 @@
     "verify": "node scripts/verify-project.mjs",
     "smoke": "node scripts/smoke-test.mjs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:a11y": "node scripts/a11y-audit.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "5.2.2",

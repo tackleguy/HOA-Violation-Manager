@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Building2, Sparkles, UserPlus } from "lucide-react";
 import { FormStatus } from "@/components/a11y/form-status";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { hasSupabasePublicEnv } from "@/lib/env";
@@ -27,26 +27,30 @@ export default async function SignupPage({
   const params = await searchParams;
 
   return (
-    <main className="grid min-h-screen bg-muted/40 lg:grid-cols-[0.95fr_1.05fr]">
-      <section className="hidden border-r bg-[hsl(240_6%_10%)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
-        <Link href="/" className="flex items-center gap-3 font-semibold">
-          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-[hsl(240_6%_10%)]">HF</span>
+    <main id="main-content" tabIndex={-1} className="grid min-h-screen bg-muted/40 outline-none lg:grid-cols-[0.95fr_1.05fr]">
+      <section className="hidden border-r bg-[hsl(240_6%_10%)] p-10 text-white lg:flex lg:flex-col lg:justify-between" aria-label="Product overview">
+        <div className="flex items-center gap-3 font-semibold">
+          <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-[hsl(240_6%_10%)]" aria-hidden>
+            HF
+          </span>
           HOAFlow
-        </Link>
+        </div>
         <div>
           <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-lg bg-white/10">
-            <Building2 className="h-7 w-7" />
+            <Building2 className="h-7 w-7" aria-hidden />
           </div>
-          <h1 className="max-w-xl text-3xl font-semibold tracking-tight">Launch a secure HOA workspace in minutes.</h1>
-          <p className="mt-5 max-w-lg text-white/70">
+          <p className="max-w-xl text-3xl font-semibold tracking-tight">Launch a secure HOA workspace in minutes.</p>
+          <p className="mt-5 max-w-lg text-white/80">
             Create your organization, invite board members, and start managing violations, inspections, and community records from one place.
           </p>
         </div>
       </section>
-      <section className="flex items-center justify-center px-4 py-12">
+      <section className="flex items-center justify-center px-4 py-12" aria-labelledby="signup-heading">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Create your HOAFlow workspace</CardTitle>
+            <h1 id="signup-heading" className="text-lg font-semibold tracking-tight">
+              Create your HOAFlow workspace
+            </h1>
             {!hasSupabaseConfig ? (
               <p className="text-sm text-muted-foreground">
                 Add Supabase environment variables to enable account creation. The product UI remains available for local preview.
@@ -82,19 +86,19 @@ export default async function SignupPage({
             </form>
             <div className="border-t pt-5 text-center text-xs text-muted-foreground">
               By creating a workspace, you agree to our{" "}
-              <Link href="/terms" className="text-foreground hover:underline">
+              <Link href="/terms" className="link-quiet inline min-h-0 text-foreground underline underline-offset-2">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="text-foreground hover:underline">
+              <Link href="/privacy" className="link-quiet inline min-h-0 text-foreground underline underline-offset-2">
                 Privacy Policy
               </Link>
               .
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>Already have access?</span>
-              <Link href="/login" className="inline-flex items-center gap-1 hover:text-foreground">
-                <UserPlus className="h-4 w-4" />
+              <Link href="/login" className="link-quiet gap-1">
+                <UserPlus className="h-4 w-4" aria-hidden />
                 Sign in
               </Link>
             </div>
